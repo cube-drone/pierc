@@ -11,6 +11,7 @@
 	<ul class="irc">
 	<?php 
 	include("lib/PieRC_Database.php");
+	include("lib/IRC_Display.php");
 
 	$pdb = new pie_db( "mysql.lassam.net", "", "pierc", "pierc", "thedayofthetriffids" );
 	if( $_GET['n'] != "" && $_GET['n'] != NULL)
@@ -23,33 +24,7 @@
 	}
 	foreach ($pdb->get_last_n_lines( "sfucsss", $n ) as $line)
 	{
-		switch( $line['type'] )
-		{
-			case "pubmsg":
-				print "<li class='pubmsg'> "
-							. "<span class='time'>(" . $line["time"] . "):</span>" 
-							. "<span class='name'>" . $line["name"] . "</span>: &nbsp;"
-							. $line["message"] . "</li>\n";
-				break;
-			case "join":
-				print "<li class='join'>" 
-						. "<span class='time'>(" . $line["time"] . "):</span>"  
-						. "<span class='name'>" . $line["name"] . "</span>" 
-						. " has joined #sfucsss. </li>\n";
-				break;
-			case "part":
-				print "<li class='part'>" 
-						. "<span class='time'>(" . $line["time"] . "):</span>"  
-						. " <span class='name'>" . $line["name"] . "</span> has left #sfucsss. </li>\n";
-				break;
-			case "action":
-				print "<li class='action'>"
-						."<span class='time'>(" . $line["time"] . "):</span>"  
-						."<span class='name'>" . $line["name"] . "</span> " . $line["message"] . "</li>\n";
-				break;
-			default: 
-				print "<li class='".$line["type"]."'><span class='name'>" . $line["name"] . "</span>: &nbsp;" . $line["message"] . "</li>\n";
-		}
+		print "\t\t" . irc_display($line);
 	}
 
 	?>

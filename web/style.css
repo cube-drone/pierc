@@ -1,0 +1,60 @@
+
+#content
+{
+	width: 90%;
+	margin: auto;
+	border-left: solid green 2px;
+	border-right: solid green 2px;
+}
+
+.irc 
+{
+	font-family: monospace;
+	font-size: 110%;
+}
+
+.irc .pubmsg
+{
+
+}
+
+.irc .time
+{
+	font-size: 50%;
+	color: grey;
+}
+
+.irc .time:hover
+{
+	font-size: 80%;
+	font-weight: bold;
+}
+
+.irc  .join
+{
+	color: green;
+}
+
+.irc  .part
+{
+	color: salmon;
+}
+
+.irc  .action
+{
+	color: purple;
+}
+
+.irc  .topic
+{
+	color: blue;
+	border-top: 1px solid blue;
+	border-bottom: 1px solid blue;
+	padding: 0.5em 0.5em 0.5em 0.5em;
+	margin: 0.5em 0.5em 0.5em 0.5em;
+}
+
+.irc .name
+{
+	font-weight: bold;
+}
