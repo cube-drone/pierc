@@ -50,7 +50,7 @@ function link_to_html( $string )
 {
 	// \todo Is that all the valid HTTP request characters? Dunno.
 	// ""
-	return preg_replace( '/(http:\/\/[0-9A-Za-z~\.%\/\?&+=_-]*)/',
+	return preg_replace( '/(http:\/\/[0-9A-Za-z:~\.%\/\?&+=_-]*)/',
 							'<a href=\'$0\'>$0</a>', $string );
 }
 
