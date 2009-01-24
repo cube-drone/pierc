@@ -7,54 +7,68 @@
 	border-right: solid green 2px;
 }
 
+.irc .tiny_button .img
+{
+	background: url("images/sweetie_pack_icons/12-em-up.png") no-repeat;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+.irc .tiny_button .img:hover
+{
+	background: url("images/sweetie_pack_icons/12-em-down.png") no-repeat;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
 .irc 
 {
 	font-family: monospace;
 	font-size: 110%;
 }
 
-.irc .pubmsg
-{
+	.irc .pubmsg
+	{
 
-}
+	}
 
-.irc .time
-{
-	font-size: 50%;
-	color: grey;
-}
+	.irc .time
+	{
+		font-size: 50%;
+		color: grey;
+	}
 
-.irc .time:hover
-{
-	font-size: 80%;
-	font-weight: bold;
-}
+	.irc .time:hover
+	{
+		font-size: 80%;
+		font-weight: bold;
+	}
 
-.irc  .join
-{
-	color: green;
-}
+	.irc  .join
+	{
+		color: green;
+	}
 
-.irc  .part
-{
-	color: salmon;
-}
+	.irc  .part
+	{
+		color: salmon;
+	}
 
-.irc  .action
-{
-	color: purple;
-}
+	.irc  .action
+	{
+		color: purple;
+	}
 
-.irc  .topic
-{
-	color: blue;
-	border-top: 1px solid blue;
-	border-bottom: 1px solid blue;
-	padding: 0.5em 0.5em 0.5em 0.5em;
-	margin: 0.5em 0.5em 0.5em 0.5em;
-}
+	.irc  .topic
+	{
+		color: blue;
+		border-top: 1px solid blue;
+		border-bottom: 1px solid blue;
+		padding: 0.5em 0.5em 0.5em 0.5em;
+		margin: 0.5em 0.5em 0.5em 0.5em;
+	}
 
-.irc .name
-{
-	font-weight: bold;
-}
+	.irc .name
+	{
+		font-weight: bold;
+	}

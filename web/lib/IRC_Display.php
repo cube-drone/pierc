@@ -11,44 +11,37 @@ function irc_display( $line )
 // into a html string - as <li class='$type'> (text) </li> 
 {
 	if ( $line['hidden'] != "F" ) { return "";}
+	
 	$line['message'] = link_to_html($line['message']);
+	
+	$prelude = " <li class='".$line['type']."'>" 
+					."<a class='tiny_button' href='context.php?id=".$line["id"]."&n=20'><span class='img'> </span></a>"
+					."<span class='time'>(" . $line["time"] . "):</span>"
+					."<span class='name'>" . $line["name"] . "</span>" ;
+	
 	switch( $line['type'] )
 		{
 			case "pubmsg":
-				return "<li class='pubmsg'> "
-							. "<span class='time'>(" . $line["time"] . "):</span>" 
-							. "<span class='name'>" . $line["name"] . "</span>: &nbsp;"
-							. $line["message"] . "</li>\n";
+				return $prelude	. ": " . $line["message"] . "</li>\n";
 				break;
 			case "join":
-				return "<li class='join'>" 
-						. "<span class='time'>(" . $line["time"] . "):</span>"  
-						. "<span class='name'>" . $line["name"] . "</span>" 
-						. " has joined #sfucsss. </li>\n";
+				return $prelude . " has joined #sfucsss. </li>\n";
 				break;
 			case "part":
-				return "<li class='part'>" 
-						. "<span class='time'>(" . $line["time"] . "):</span>"  
-						. " <span class='name'>" . $line["name"] . "</span> has left #sfucsss. </li>\n";
+				return $prelude . " has left #sfucsss. </li>\n";
 				break;
 			case "action":
-				return "<li class='action'>"
-						."<span class='time'>(" . $line["time"] . "):</span>"  
-						."<span class='name'>" . $line["name"] . "</span> " . $line["message"] . "</li>\n";
+				return $prelude . " " . $line["message"] . "</li>\n";
 				break;
 			case "topic":
-				return "<li class='topic'>"
-						."<span class='time'>(" . $line["time"] . "):</span>"  
-						."<span class='name'>" . $line["name"] . "</span> has changed the topic:  <br />" . $line["message"] . "</li>\n";
+				return $prelude . " has changed the topic:  <br />" . $line["message"] . "</li>\n";
 				break;
 			case "nick":
 				// \todo The logger should cram the *new* nick in $line["message"] or something.  
-				return "<li class='nick'>"
-						."<span class='time'>(" . $line["time"] . "):</span>"  
-						."<span class='name'>" . $line["name"] . "</span> has changed his nick.  " . $line["message"] . "</li>\n";
+				return $prelude . " has changed his nick.  " . $line["message"] . "</li>\n";
 				break;
 			default: 
-				return "<li class='".$line["type"]."'><span class='name'>" . $line["name"] . "</span>: &nbsp;" . $line["message"] . "</li>\n";
+				return $prelude . ": " . $line["message"] . "</li>\n";
 		}
 }
 
