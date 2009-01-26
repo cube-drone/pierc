@@ -7,6 +7,11 @@
 	<link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 <body>
+<?php
+include('mainmenu.php');
+print get_main_menu();
+?>
+	
 <div id="content">
 	<ul class="irc">
 	<?php 

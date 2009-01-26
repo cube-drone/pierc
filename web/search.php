@@ -11,35 +11,43 @@
 include('mainmenu.php');
 print get_main_menu();
 ?>
+	
 <div id="content">
 	<ul class="irc">
 	<?php 
 	include("lib/PieRC_Database.php");
 	include("lib/IRC_Display.php");
 
+	$pdb = new pie_db( "mysql.lassam.net", "", "pierc", "pierc", "thedayofthetriffids" );
 	if( $_GET['n'] != "" && $_GET['n'] != NULL)
 	{
 		$n = $_GET['n'];
 	}
 	else
 	{
-		$n = 20;
+		$n = 50;
 	}
-	if( $_GET['id'] != "" && $_GET['id'] != NULL)
+	if( $_GET['search'] != "" && $_GET['search'] != NULL)
 	{
-		$id = $_GET['id'];
+		$search = $_GET['search'];
 	}
 	else
 	{
-		$id = 10;
+		$search = "Poop";
 	}
 	
-	
-	$pdb = new pie_db( "mysql.lassam.net", "", "pierc", "pierc", "thedayofthetriffids" );
-	
-	foreach ($pdb->get_context( "sfucsss", $id,  $n ) as $line)
+	$results = $pdb->get_search_results( "sfucsss", $search, $n );
+	if (!$results)
 	{
+		print "<div class='error'>We're sorry, the search term you entered could not be found.  Please enjoy this search for the word 'poop', instead. </div>";
+		$results = $pdb->get_search_results( "sfucsss", "poop", $n );
+	}
+	
+	foreach ($results as $line)
+	{
+		print "\t\t" . "<li></li>";
 		print "\t\t" . irc_display($line);
+		print "\t\t" . "<li></li>";
 	}
 
 	?>
