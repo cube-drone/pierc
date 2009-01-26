@@ -81,7 +81,7 @@ class pie_db extends db_class
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden 
 				FROM main 
-			$searchquery ORDER BY id DESC LIMIT $n;";
+			$searchquery ORDER BY id LIMIT $n;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
