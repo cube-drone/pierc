@@ -1,24 +1,26 @@
+#mainmenu
+{
+	margin: 2em 2em 0 2em;
+	padding: 1em 1em 1em 1em;
+	border: 2px solid crimson;
+	width: 20em;
+}
+
+	#mainmenu #mainlogo
+	{
+		background: url('images/pierc.png');
+		width: 195px;
+		height: 92px;
+		display: block;
+	}
 
 #content
 {
 	width: 90%;
 	margin: auto;
+	margin-top: 0;
 	border-left: solid green 2px;
 	border-right: solid green 2px;
-}
-
-.irc .tiny_button .img
-{
-	background: url("images/sweetie_pack_icons/12-em-up.png") no-repeat;
-	padding-left: 6px;
-	padding-right: 6px;
-}
-
-.irc .tiny_button .img:hover
-{
-	background: url("images/sweetie_pack_icons/12-em-down.png") no-repeat;
-	padding-left: 6px;
-	padding-right: 6px;
 }
 
 .irc 
@@ -27,6 +29,25 @@
 	font-size: 110%;
 }
 
+	.irc .special
+	{
+		font-size: 150%;
+	}
+
+	.irc .tiny_button .img
+	{
+		background: url("images/sweetie_pack_icons/12-em-up.png") no-repeat;
+		padding-left: 6px;
+		padding-right: 6px;
+	}
+
+	.irc .tiny_button .img:hover
+	{
+		background: url("images/sweetie_pack_icons/12-em-down.png") no-repeat;
+		padding-left: 6px;
+		padding-right: 6px;
+	}
+
 	.irc .pubmsg
 	{
 
@@ -34,7 +55,7 @@
 
 	.irc .time
 	{
-		font-size: 50%;
+		font-size: 8px;
 		color: grey;
 	}
 
@@ -71,4 +92,9 @@
 	.irc .name
 	{
 		font-weight: bold;
+	}
+	
+	.irc .filler
+	{
+		visibility: hidden;
 	}

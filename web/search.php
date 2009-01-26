@@ -45,9 +45,9 @@ print get_main_menu();
 	
 	foreach ($results as $line)
 	{
-		print "\t\t" . "<li></li>";
+		print "\t\t" . "<li class='filler'></li>";
 		print "\t\t" . irc_display($line);
-		print "\t\t" . "<li></li>";
+		print "\t\t" . "<li class='filler'></li>";
 	}
 
 	?>

@@ -14,9 +14,15 @@ function irc_display( $line )
 	
 	$line['message'] = link_to_html($line['message']);
 	
-	$prelude = " <li class='".$line['type']."'>" 
+	$extraclass = "";
+	if ( $line['id'] == $_GET['id'])
+	{
+		$extraclass = "special";
+	}
+	
+	$prelude = " <li class='".$line['type']." ".$extraclass."'>" 
 					."<a class='tiny_button' href='context.php?id=".$line["id"]."&n=20'><span class='img'> </span></a>"
-					."<span class='time'>(" . $line["time"] . "):</span>"
+					."<span class='time'>(" . $line["time"] . "): </span>"
 					."<span class='name'>" . $line["name"] . "</span>" ;
 	
 	switch( $line['type'] )
