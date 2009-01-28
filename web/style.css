@@ -1,26 +1,61 @@
 #mainmenu
 {
-	margin: 2em 2em 0 2em;
-	padding: 1em 1em 1em 1em;
+	background: url('images/line.png');
+	float: right;
+	margin: 2em 2em 2em 2em;
 	border: 2px solid crimson;
 	width: 20em;
+	-moz-border-radius: 20px;
+	-webkit-border-radius: 20px;
 }
 
 	#mainmenu #mainlogo
 	{
 		background: url('images/pierc.png');
 		width: 195px;
+		margin: auto;
 		height: 92px;
 		display: block;
+		padding-bottom: 0;
+		margin-bottom: -10px;
 	}
+	
+	#mainmenu ul
+	{
+		background-color: crimson;
+		list-style-type: none;
+		padding: 0.2em 1em 0.2em 0.5em ;
+		font-family: Helvetica, Arial, sans-serif;
+	}
+	
+		#mainmenu ul li
+		{
+			display: inline;
+			padding-left: 1em;
+		}
+		
+		#mainmenu ul li a
+		{
+		text-decoration: none;
+		color: white;
+		}
+	
+	#mainmenu form
+	{
+		padding-left: 3.5em;
+	}
+		
 
 #content
 {
 	width: 90%;
 	margin: auto;
 	margin-top: 0;
-	border-left: solid green 2px;
-	border-right: solid green 2px;
+	padding: 1em;
+	border: solid crimson 7px;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	
 }
 
 .irc 
