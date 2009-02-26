@@ -38,7 +38,7 @@ function irc_display( $line )
 	}
 	
 	$prelude = " <li class='".$line['type']." ".$extraclass."'>" 
-					."<a class='tiny_button' href='context.php?id=".$line["id"]."&n=20&channel=". $line["channel"] ."'><span class='img'> </span></a>"
+					."<a class='tiny_button' href='context.php?id=".$line["id"]."&n=20&channel=". $line["channel"] ."'><img src='images/sweetie_pack_icons/12-em-up.png' /></a>"
 					."<span class='time'>(" . $line["time"] . "): </span>"
 					."<span class='name'>" . $line["name"] . "</span>" ;
 	
@@ -73,7 +73,7 @@ function link_to_html( $string )
 {
 	// \todo Is that all the valid HTTP request characters? Dunno.
 	// ""
-	return preg_replace( '/(http:\/\/[0-9A-Za-z:~\.%\/\?&+=_-]*)/',
+	return preg_replace( '/(http:\/\/[0-9#\(\);A-Za-z:~\.%\/\?&+=_-]*)/',
 							'<a href=\'$0\'>$0</a>', $string );
 }
 

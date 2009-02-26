@@ -62,25 +62,33 @@
 {
 	font-family: monospace;
 	font-size: 110%;
+	list-style-type: none;
 }
+
+	.irc li
+	{
+		min-height: 0.3em;
+	}
 
 	.irc .special
 	{
 		font-size: 150%;
 	}
 
-	.irc .tiny_button .img
+	.irc .tiny_button img
 	{
-		background: url("images/sweetie_pack_icons/12-em-up.png") no-repeat;
+		height: 10px;
+		border: 1px solid #EEE;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
 		padding-left: 6px;
 		padding-right: 6px;
 	}
 
-	.irc .tiny_button .img:hover
+	.irc .tiny_button img:hover
 	{
-		background: url("images/sweetie_pack_icons/12-em-down.png") no-repeat;
-		padding-left: 6px;
-		padding-right: 6px;
+		border: 1px solid #CCC;
+		background-color: #DDD;
 	}
 
 	.irc .pubmsg
