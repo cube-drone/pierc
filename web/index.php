@@ -13,7 +13,7 @@
 include('mainmenu.php');
 print get_main_menu();
 ?>
-	<ul class="irc">
+	
 	<?php 
 	include("lib/PieRC_Database.php");
 	include("lib/IRC_Display.php");
@@ -27,13 +27,34 @@ print get_main_menu();
 	{
 		$n = 50;
 	}
-	foreach ($pdb->get_last_n_lines( "sfucsss", $n ) as $line)
+	
+	if( $_GET['channel'] != "" && $_GET['channel'] != NULL)
+	{
+		$channel = $_GET['channel'];
+	}
+	else
+	{
+		$channel = "sfucsss";
+	}
+	
+	$lines = ($pdb->get_last_n_lines( $channel, $n ) ) ;
+	if ( count( $lines ) == 0 )
+	{
+		print "</div></body></html>";
+		exit();
+	}
+	
+	$firstline = $lines[0];
+	
+	print page( $firstline, "prev" );
+	
+	print "<ul class='irc'>";
+	foreach ($lines as $line)
 	{
 		print "\t\t" . irc_display($line);
 	}
-
+	print "</ul";
 	?>
-	</ul>
 </div>
 </body>
 </html>

@@ -38,7 +38,7 @@ class pie_db extends db_class
 		$channel = mysql_real_escape_string( $channel );
 		$n = (int)$n;
 		$query = "
-			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' ORDER BY id DESC LIMIT $n;";
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' ORDER BY time DESC, id DESC LIMIT $n;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
@@ -47,16 +47,53 @@ class pie_db extends db_class
 		return array_reverse($this->hashinate($results));
 	}
 	
-	public function get_context( $channel, $id, $n )
+	public function get_offset( $channel, $id)
 	{
-		$channel = mysql_real_escape_string($channel);
+		$channel = mysql_real_escape_string( $channel );
 		$n = (int)$n;
-		// Note: This does not protect well against multiple channels in the same database at all. 
-		$id = (int)$id + 5;
 		$query = "
-			SELECT id, channel, name, time, message, type, hidden 
-				FROM (SELECT * FROM main WHERE channel = '$channel') channel_table
-			WHERE id <= $id ORDER BY id DESC LIMIT $n;";
+			SELECT COUNT(*) as count FROM main 
+				WHERE channel = '$channel' 
+				AND id < $id 
+				GROUP BY channel;";
+		
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		$res = $this->hashinate($results);
+		$count = $res[0]["count"];
+		if ( $count < 0 )
+		{
+			return 0;
+		}
+		return $count;
+	}
+	
+	public function get_context( $channel, $id, $n)
+	{
+	
+		$channel = mysql_real_escape_string($channel);
+		$n = (int)$n + (int)$offset;
+		$offset = (int) $offset;
+		$id = (int)$id;
+		
+		$count = $this->get_offset( $channel, $id );
+		
+		$offset = $count - (int)($n/2);
+		
+		if( $offset < 0)
+		{
+			$offset = 0;
+		}
+		
+		$query = "
+			SELECT * 
+				FROM (SELECT * FROM main 
+						WHERE channel = '$channel'
+						LIMIT $n OFFSET $offset) channel_table
+				ORDER BY time DESC ;
+				";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }

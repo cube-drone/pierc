@@ -1,5 +1,21 @@
 
 <?php
+function page( $line, $prev_next="prev") 
+{
+	if( $prev_next == "prev")
+	{
+		$id = $line['id']-9;
+		$name = "&lt;&lt;&nbsp;Go Back";
+	}
+	else
+	{
+		$id = $line['id']+9;
+		$name = "Go Forward&nbsp;&gt;&gt;";
+	}
+	$text = "<a class='page' href='context.php?id=".$id."&n=20&channel=". $line["channel"] ."'>$name</a>";
+	return $text;
+}
+
 function irc_display( $line )
 // Convert a $line- an associative array containing
 // 	time (the time the message was logged), 
@@ -12,6 +28,7 @@ function irc_display( $line )
 {
 	if ( $line['hidden'] != "F" ) { return "";}
 	
+	$line['message'] = htmlspecialchars( $line['message'] );
 	$line['message'] = link_to_html($line['message']);
 	
 	$extraclass = "";
@@ -21,7 +38,7 @@ function irc_display( $line )
 	}
 	
 	$prelude = " <li class='".$line['type']." ".$extraclass."'>" 
-					."<a class='tiny_button' href='context.php?id=".$line["id"]."&n=20'><span class='img'> </span></a>"
+					."<a class='tiny_button' href='context.php?id=".$line["id"]."&n=20&channel=". $line["channel"] ."'><span class='img'> </span></a>"
 					."<span class='time'>(" . $line["time"] . "): </span>"
 					."<span class='name'>" . $line["name"] . "</span>" ;
 	
@@ -31,10 +48,10 @@ function irc_display( $line )
 				return $prelude	. ": " . $line["message"] . "</li>\n";
 				break;
 			case "join":
-				return $prelude . " has joined #sfucsss. </li>\n";
+				return $prelude . " has joined #" . $line["channel"] . " </li>\n";
 				break;
 			case "part":
-				return $prelude . " has left #sfucsss. </li>\n";
+				return $prelude . " has left #" . $line["channel"] . ". </li>\n";
 				break;
 			case "action":
 				return $prelude . " " . $line["message"] . "</li>\n";

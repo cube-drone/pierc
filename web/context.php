@@ -13,7 +13,6 @@ include('mainmenu.php');
 print get_main_menu();
 ?>
 
-	<ul class="irc">
 	<?php 
 	include("lib/PieRC_Database.php");
 	include("lib/IRC_Display.php");
@@ -34,17 +33,42 @@ print get_main_menu();
 	{
 		$id = 10;
 	}
+	if( isset( $_GET['channel'] ) )
+	{
+		$channel = $_GET['channel'];
+	}
+	else
+	{
+		$channel = "sfucsss";
+	}
 	
 	
 	$pdb = new pie_db( "mysql.lassam.net", "", "pierc", "pierc", "thedayofthetriffids" );
+	$context = $pdb->get_context( $channel, $id,  $n );
 	
-	foreach ($pdb->get_context( "sfucsss", $id,  $n ) as $line)
+	if ( count( $context ) == 0 )
+	{
+		print "</div></body></html>";
+		exit();
+	}
+	
+	$firstline = $context[0];
+	
+	print page( $firstline, "prev" );
+	
+	print "<ul class='irc'>";
+	
+	$lastline = $firstline;
+	foreach ($context as $line)
 	{
 		print "\t\t" . irc_display($line);
+		$lastline = $line;
 	}
+	print "</ul>";
+	
+	print page( $lastline, "next" );
 
 	?>
-	</ul>
 </div>
 </body>
 </html>
