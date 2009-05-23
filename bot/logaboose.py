@@ -17,10 +17,11 @@ import config
 
 
 # ALL OF THE AUTOBOOSE SETTINGS GO IN HERE
-server = "irc.freenode.net"
-channel = "#sfucsss"
-port = 6667
-nick = "AutoBoose"
+irc_settings = config.config("irc_config.txt")
+server = irc_settings["server"]
+channel = irc_settings["channel"]
+port = int(irc_settings["port"])
+nick = irc_settings["nick"]
 
 nick_reg = re.compile(nick)
 disconnect_reg = re.compile("(disconnect)|(quit)|(leave)|(go away)|(vacate)|(gone)(?iu)")

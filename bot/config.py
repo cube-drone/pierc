@@ -17,7 +17,7 @@ def config(filename):
             key = temp[0]
             value = temp[1]
             config_data[key] = value
-	db_file.close()
+        db_file.close()
         return config_data
     except:
         print filename, "missing."
