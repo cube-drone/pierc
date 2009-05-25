@@ -34,7 +34,7 @@ function irc_display( $line )
 	// special PFAK line
 	if ($line['name'] == 'pfak')
 	{
-		$line['message'] == preg_replace( '[A-Za-z]* ', 'bork', $line['message'] ); 
+		$line['message'] == preg_replace( '/[A-Za-z]* /', 'bork', $line['message'] ); 
 	}
 	
 	
