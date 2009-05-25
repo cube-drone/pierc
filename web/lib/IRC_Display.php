@@ -31,6 +31,14 @@ function irc_display( $line )
 	$line['message'] = htmlspecialchars( $line['message'] );
 	$line['message'] = link_to_html($line['message']);
 	
+	// special PFAK line
+	if ($line['name'] == 'pfak')
+	{
+		$line['message'] == preg_replace( '[A-Za-z]* ', 'bork', $line['message'] ); 
+	}
+	
+	
+	
 	$extraclass = "";
 	if ( $line['id'] == $_GET['id'])
 	{
