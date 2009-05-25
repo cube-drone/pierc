@@ -28,14 +28,16 @@ function irc_display( $line )
 {
 	if ( $line['hidden'] != "F" ) { return "";}
 	
-	$line['message'] = htmlspecialchars( $line['message'] );
-	$line['message'] = link_to_html($line['message']);
-	
 	// special PFAK line
 	if ($line['name'] == 'pfak')
 	{
-		$line['message'] == preg_replace( '/[A-Za-z]* /', 'bork', $line['message'] ); 
+		$line['message'] = preg_replace( '/[\w]+/', "bork", $line['message'] ); 	
 	}
+	
+	$line['message'] = htmlspecialchars( $line['message'] );
+	$line['message'] = link_to_html($line['message']);
+	
+	
 	
 	
 	
