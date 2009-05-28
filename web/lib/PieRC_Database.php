@@ -47,6 +47,50 @@ class pie_db extends db_class
 		return array_reverse($this->hashinate($results));
 	}
 	
+	public function get_before( $channel, $id, $n )
+	{
+		$channel = mysql_real_escape_string( $channel );
+		$n = (int)$n;
+		$id = (int)$id;
+		$query = "
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id < $id ORDER BY time DESC, id DESC LIMIT $n;";
+		
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		return $this->hashinate($results);
+	}
+	
+	public function get_after( $channel, $id, $n )
+	{
+		$channel = mysql_real_escape_string( $channel );
+		$n = (int)$n;
+		$id = (int)$id;
+		$query = "
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY time ASC, id DESC LIMIT $n;";
+		
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		return $this->hashinate($results);
+	}
+	
+	public function get_lines_between_now_and_id( $channel, $id)
+	{
+		$channel = mysql_real_escape_string( $channel );
+		$id = (int)$id;
+		$query = "
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY time DESC, id DESC ";
+		
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		return array_reverse($this->hashinate($results));
+	}
+	
 	public function get_offset( $channel, $id)
 	{
 		$channel = mysql_real_escape_string( $channel );
@@ -126,8 +170,6 @@ class pie_db extends db_class
 		
 		return array_reverse($this->hashinate($results));
 	}
-	
-	
 }
 ?>
 

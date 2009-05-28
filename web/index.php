@@ -1,60 +1,40 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" charset="UTF-16">
 <head> 
-	<title>The Last 50 Things Said.</title>
+	<title>AutoBoose: The Last 50 Things Said.</title>
 	<link rel="stylesheet" href="style.css" type="text/css" />
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"> </script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/jquery-ui.min.js"> </script>
+	<script type="text/javascript" src="autoboose.js"> </script>
+
 </head>
 <body>
 	
-<div id="content">
-<?php
-include('mainmenu.php');
-print get_main_menu();
-?>
+<div id="toolbar"> 
+	<div id="toolbar_inner">
 	
-	<?php 
-	include("lib/PieRC_Database.php");
-	include("lib/IRC_Display.php");
+	<form style="display:inline;" action="#">
+		<input id="searchbox" type="text" />
+		<input id="search" type="submit" value="Search"/>
+	</form>
+	<a id="home" href="#">Home</a> | 
+	<a id="refresh" href="#">Refresh</a> | 
+	<a id="prev" href="#"><<</a> | 
+	<a id="next" href="#">>></a>
+	<img id="loading" src="images/ajax-loader.gif"/>
+	</div>
 
-	$pdb = new pie_db( "mysql.lassam.net", "", "pierc", "pierc", "thedayofthetriffids" );
-	if( $_GET['n'] != "" && $_GET['n'] != NULL)
-	{
-		$n = $_GET['n'];
-	}
-	else
-	{
-		$n = 50;
-	}
+</div>	
 	
-	if( $_GET['channel'] != "" && $_GET['channel'] != NULL)
-	{
-		$channel = $_GET['channel'];
-	}
-	else
-	{
-		$channel = "sfucsss";
-	}
+<div id="content">
 	
-	$lines = ($pdb->get_last_n_lines( $channel, $n ) ) ;
-	if ( count( $lines ) == 0 )
-	{
-		print "</div></body></html>";
-		exit();
-	}
+	<table id="irc">
+	</table>
 	
-	$firstline = $lines[0];
-	
-	print page( $firstline, "prev" );
-	
-	print "<ul class='irc'>";
-	foreach ($lines as $line)
-	{
-		print "\t\t" . irc_display($line);
-	}
-	print "</ul";
-	?>
 </div>
+
 </body>
 </html>
