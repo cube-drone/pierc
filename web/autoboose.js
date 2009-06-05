@@ -1,26 +1,79 @@
+// The main site is powered, rather unnecessarily, entirely by AJAX calls.
+
 // Constants
-var refresh_in_seconds = 60;
+var irc_refresh_in_seconds = 60;	// How often we refresh the page
+var page_hash_check_in_seconds = 1;	// How often we check the page hash for changes.
 
 // Globals (the horror)
-var last_id = 0;
-var first_id = 0;
-var refresh_on = true;
+var last_id = 0;		// The ID of the comment at the very bottom of the page
+var first_id = 0;		// The ID of the comment at the very top of the page
+var refresh_on = true;	// Whether or not the 'refresh' action is currently operating
+var hash = "#";			// The most recent hash value in the URL ("#search-poop")
 
 // On Load
 $(function() {
-	// load the top 50 (or top N)
-	top();
+	hashnav();
+	
 	// check for new content every N seconds
-    setInterval("refresh()", refresh_in_seconds * 1000);
+    setInterval("refresh()", irc_refresh_in_seconds * 1000);
+    
 	
 	//Toolbar setup
-	$("#search").click( search );
+	$("#search").submit( search );
 	$("#home").click( top );
 	$("#refresh").click( function(){refresh(); scroll_to_bottom();} );
 	$("#prev").click( page_up );
 	$("#next").click( page_down );
 });
 
+// Navigate around the site based on the site hash.
+// This allows for use of the "Back" button, as well as reusable URL structure. 
+function hashnav()
+{
+	hash = window.location.hash
+	if( hash.substring(1, 7) == "search")
+	{
+		var searchterm = hash.substring( 8, hash.length );
+		$("#searchbox").attr({"value":searchterm});
+		search();
+	}
+	else if (hash.substring(1, 3) == "id") 
+	{
+		var id = hash.substring( 4, hash.length );
+		context(id);
+	}
+	else if (hash.substring(1, 8) == "loading") 
+	{
+		return;
+	}
+	else
+	{
+		// load the top 50 (or top N)
+		$("#searchbox").attr({"value":hash.substring(1,7)});
+		top();
+	}
+	
+	setInterval("hashnav_check()", page_hash_check_in_seconds * 1000);
+}
+
+// Check the current hash against the hash in the url. If they're different, perform hashnav.
+// Note: this happens frequently
+function hashnav_check()
+{
+	if( hash == window.location.hash )
+	{
+		return false;
+	}
+	else
+	{
+		hashnav();
+		return true;
+	}
+}
+
+
+// Populate the page with the last 50 things said
+// This is the default 'home' activity for the page.
 function top()
 {
 	clear();
@@ -41,6 +94,7 @@ function top()
         });
 }
 
+// Check if anything 'new' has been said in the past minute or so. 
 function refresh()
 {
 	if( !refresh_on ) { return; }
@@ -62,14 +116,17 @@ function refresh()
         });
 }
 
-function search()
+// Perform a search for the given search value. Populate the page with the results.
+function search_for( searchvalue )
 {
+	//Before
 	refresh_on = false;
 	$("#refresh").hide();
-	clear();
-	var searchvalue = escape($("#searchbox").attr("value"));
 	
+	clear();
 	$('#loading').show('fast');
+	
+	// Ajax call to get search results
 	$.getJSON("json.php", {'search':searchvalue}, 
         function(data){
         	$(data).each( function(i, item) { try
@@ -83,19 +140,30 @@ function search()
         									} );
         $("#irc").addClass("searchresult");
         $('#loading').hide('slow');
+        window.location.hash = "search-"+searchvalue;
+        hash = window.location.hash;
         });
-    
 }
 
+// Perform a search for the search value in the #searchbox element. 
+function search()
+{
+	var searchvalue = escape($("#searchbox").attr("value"));
+	search_for( searchvalue );
+}
+
+// Switch to a specific IRC message, centered about its ID.
 function context(id)
 {
+	// Before
 	clear();
 	refresh_on = false;
-	$('#irc').removeClass("searchresult");
-	
 	$("#refresh").hide();
-	// Ajax call to populate table
+	
+	$('#irc').removeClass("searchresult");
 	$('#loading').show('fast');
+	
+	// Ajax call to get 'context' (find the comment at id 'id' and 'n' spaces around it). 
 	$.getJSON("json.php", {'id':id, 'n':20},
         function(data){
         	first_id = data[0].id;
@@ -103,12 +171,17 @@ function context(id)
         										$(irc_render(item)).appendTo("#irc"); 
         										last_id = item.id; 
         									});
+        					
+        	// After
         	scroll_to_id( id );
         	$('#loading').hide('slow');
+        	window.location.hash = "id-"+id;
         });
+    
 }
 
 
+// Add a page of IRC chat _before_ the current page of IRC chat
 function page_up()
 {	
 	// Ajax call to populate table
@@ -122,13 +195,16 @@ function page_up()
         									});
         	scroll_to_id( first_id );
         	$('#loading').hide('slow');
+        	window.location.hash = "id-"+first_id;
         });
+    
 }
 
+// Add a page of IRC chat _after_ the current page of IRC chat
 function page_down()
 {	
-	// Ajax call to populate table
 	$('#loading').show('fast');
+	
 	$.getJSON("json.php", {'id':last_id, 'n':20, 'context':'after' },
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").appendTo("#irc");
@@ -136,8 +212,10 @@ function page_down()
         										$(irc_render(item)).appendTo("#irc"); 
         										last_id = item.id; 
         									});
+        								
         	scroll_to_bottom();
         	$('#loading').hide('slow');
+        	window.location.hash = "id-"+last_id;
         });
 }
 
@@ -156,8 +234,14 @@ function irc_render( item )
 	else if (item.type == "action") { } 
 
 	construct_string += html_escape(item.message) + "</td>";
-	construct_string += "<td class='context'><a href='#' onclick='context("+item.id+")'>Context</a></td> </tr>";
+	construct_string += "<td class='context'><a onclick='loading' href='#id-"+item.id+"'>Context</a></td> </tr>";
 	return $(construct_string);
+}
+
+// Show the 'loading' widget. 
+function loading()
+{
+	$("#loading").show('fast');
 }
 
 // Clears the IRC area.
@@ -166,13 +250,13 @@ function clear()
 	$("#irc").html("");	
 }
 
-
 // Scroll to the bottom of the page
 function scroll_to_bottom()
 {
 	scroll_to_id(last_id)
 }
 
+// Attempt to scroll to the id of the item specified.
 function scroll_to_id(id)
 {
 	$target = $("#irc-"+id);
@@ -181,6 +265,7 @@ function scroll_to_id(id)
 }
 
 // Shouldn't this be part of javascript somewhere? 
+// Nevetheless, escapes HTML control characters.
 function html_escape( string )
 {
 	string = string.replace(/&/g, '&amp;');

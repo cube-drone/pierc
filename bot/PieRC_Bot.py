@@ -1,10 +1,7 @@
 #! /usr/bin/env python
 #
 
-# TODO: Properly sanitize input
-# TODO: Make sure commits happen regularly 
-
-
+#libs
 from ircbot import SingleServerIRCBot
 from irclib import nm_to_n, nm_to_h, irc_lower, ip_numstr_to_quad, ip_quad_to_numstr
 import irclib
@@ -16,7 +13,7 @@ import PieRC_Database
 import config
 
 
-# ALL OF THE AUTOBOOSE SETTINGS GO IN HERE
+# Configuration
 irc_settings = config.config("irc_config.txt")
 server = irc_settings["server"]
 channel = irc_settings["channel"]
@@ -26,7 +23,7 @@ nick = irc_settings["nick"]
 nick_reg = re.compile(nick)
 disconnect_reg = re.compile("(disconnect)|(quit)|(leave)|(go away)|(vacate)|(gone)(?iu)")
 echo_reg = re.compile("(echo)(?iu)")
-# ALL OF THE AUTOBOOSE SETTINGS END HERE
+
 
 class Logger(irclib.SimpleIRCClient):
 	def __init__(self, target):
@@ -34,6 +31,7 @@ class Logger(irclib.SimpleIRCClient):
 		self.target = target
 		self.echo = False
 		
+		# On creating the Bot, instantiate the database 
 		mysql_config = config.config("mysql_config.txt")
 		self.db = PieRC_Database.PieRC_Database( mysql_config["server"],
 									int(mysql_config["port"]),
@@ -42,6 +40,7 @@ class Logger(irclib.SimpleIRCClient):
 									mysql_config["password"])
 		
 	def _dispatcher(self, c, e):
+	# This determines how a new event is handled. 
 		if(e.eventtype() == "topic" or 
 		   e.eventtype() == "part" or
 		   e.eventtype() == "join" or
@@ -57,6 +56,7 @@ class Logger(irclib.SimpleIRCClient):
 			except IndexError:
 				text = ""
 		
+			# Most of the events are pushed straight to the DB.
 			self.db.insert_now( channel.strip("#"), 			#channel
 								source, 						#name
 								text, 							#message
@@ -83,12 +83,13 @@ class Logger(irclib.SimpleIRCClient):
 	def on_pubmsg(self, connection, event):
 		text = event.arguments()[0]
 		
+		# Debugging output
 		print "SOURCE: " + event.source();
 		print "TARGET: " + event.target();
 		for argument in event.arguments():
 			print argument + ", "	
 
-		# ALL OF THE AUTOBOOSE LOGIC GOES IN HERE
+		# If you talk to the bot, this is how he responds.
 		if nick_reg.search(text):
 			if disconnect_reg.search(text):
 				connection.privmsg(channel, "Aww.")
@@ -100,7 +101,6 @@ class Logger(irclib.SimpleIRCClient):
 				self.echo = False
 		if self.echo:
 			connection.privmsg(channel, text)
-		#ALL OF THE AUTOBOOSE LOGIC ENDS HERE
 
 def main():
 

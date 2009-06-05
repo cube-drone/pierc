@@ -16,9 +16,9 @@
 <div id="toolbar"> 
 	<div id="toolbar_inner">
 	
-	<form style="display:inline;" action="#">
-		<input id="searchbox" type="text" />
-		<input id="search" type="submit" value="Search"/>
+	<form id="search" style="display:inline;" action="#loading">
+		<input id="searchbox" tabindex="1" type="text" />
+		<input tabindex="2" type="submit" value="Search"/>
 	</form>
 	<a id="home" href="#">Home</a> | 
 	<a id="refresh" href="#">Refresh</a> | 
