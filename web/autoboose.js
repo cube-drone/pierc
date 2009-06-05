@@ -12,16 +12,17 @@ var hash = "#";			// The most recent hash value in the URL ("#search-poop")
 
 // On Load
 $(function() {
-	hashnav();
+	
 	
 	// check for new content every N seconds
     setInterval("refresh()", irc_refresh_in_seconds * 1000);
+    setInterval("hashnav_check()", page_hash_check_in_seconds * 1000);
     
+    hashnav();
 	
 	//Toolbar setup
 	$("#search").submit( search );
 	$("#home").click( top );
-	$("#refresh").click( function(){refresh(); scroll_to_bottom();} );
 	$("#prev").click( page_up );
 	$("#next").click( page_down );
 });
@@ -52,8 +53,6 @@ function hashnav()
 		$("#searchbox").attr({"value":hash.substring(1,7)});
 		top();
 	}
-	
-	setInterval("hashnav_check()", page_hash_check_in_seconds * 1000);
 }
 
 // Check the current hash against the hash in the url. If they're different, perform hashnav.
@@ -79,7 +78,7 @@ function top()
 	clear();
 	refresh_on = true;
 	$('#irc').removeClass("searchresult");
-	$("#refresh").show();
+	$("#options").show();
 	// Ajax call to populate table
 	$('#loading').show('fast');
 	$.getJSON("json.php",
@@ -119,9 +118,13 @@ function refresh()
 // Perform a search for the given search value. Populate the page with the results.
 function search_for( searchvalue )
 {
+	
+	window.location.hash = "search-"+searchvalue;
+    hash = window.location.hash;
+    	
 	//Before
 	refresh_on = false;
-	$("#refresh").hide();
+	$("#options").hide();
 	
 	clear();
 	$('#loading').show('fast');
@@ -140,8 +143,7 @@ function search_for( searchvalue )
         									} );
         $("#irc").addClass("searchresult");
         $('#loading').hide('slow');
-        window.location.hash = "search-"+searchvalue;
-        hash = window.location.hash;
+        
         });
 }
 
@@ -150,6 +152,7 @@ function search()
 {
 	var searchvalue = escape($("#searchbox").attr("value"));
 	search_for( searchvalue );
+	return false; // This should prevent the search form from submitting
 }
 
 // Switch to a specific IRC message, centered about its ID.
@@ -158,7 +161,7 @@ function context(id)
 	// Before
 	clear();
 	refresh_on = false;
-	$("#refresh").hide();
+	$("#options").show();
 	
 	$('#irc').removeClass("searchresult");
 	$('#loading').show('fast');
@@ -176,6 +179,7 @@ function context(id)
         	scroll_to_id( id );
         	$('#loading').hide('slow');
         	window.location.hash = "id-"+id;
+        	hash = window.location.hash;
         });
     
 }
@@ -195,9 +199,8 @@ function page_up()
         									});
         	scroll_to_id( first_id );
         	$('#loading').hide('slow');
-        	window.location.hash = "id-"+first_id;
         });
-    
+ 	return false;   
 }
 
 // Add a page of IRC chat _after_ the current page of IRC chat
@@ -215,8 +218,8 @@ function page_down()
         								
         	scroll_to_bottom();
         	$('#loading').hide('slow');
-        	window.location.hash = "id-"+last_id;
         });
+    return false;
 }
 
 // Convert a single IRC message into a table row

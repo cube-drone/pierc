@@ -20,10 +20,10 @@
 		<input id="searchbox" tabindex="1" type="text" />
 		<input tabindex="2" type="submit" value="Search"/>
 	</form>
-	<a id="home" href="#">Home</a> | 
-	<a id="refresh" href="#">Refresh</a> | 
+	<a id="home" href="#">Home</a> 
+	<span id="options"> |
 	<a id="prev" href="#"><<</a> | 
-	<a id="next" href="#">>></a>
+	<a id="next" href="#">>></a> </span>
 	<img id="loading" src="images/ajax-loader.gif"/>
 	</div>
 
