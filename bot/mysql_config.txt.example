@@ -1,0 +1,5 @@
+server: mysql.lassam.net
+port: 3306
+database: pierc
+user: pierc
+password: this_is_not_the_correct_password
