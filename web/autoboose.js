@@ -276,16 +276,18 @@ function irc_render( item )
 	if ( item.hidden != "F" ) { return "";} 
 	
 	var message_tag = /^\s*([A-Za-z]*):/.exec(item.message);
+	var tag_tag = "";
 	if (message_tag) 
 	{
 		message_tag = message_tag[1].toLowerCase();
+		tag_tag = "tag";
 	}
 	else
 	{
 		message_tag = "";
 	}
 	
-	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+" "+message_tag+"'>";
+	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
 	construct_string += "<td class='name'><a href='#tag-"+html_escape(item.name)+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
 	
 	if 		(item.type == "pubmsg") { construct_string += ":&nbsp;";}

@@ -1,3 +1,8 @@
+a
+{
+	color: #2D605D;
+}
+
 #toolbar
 {
 	position: fixed;
@@ -91,6 +96,11 @@
 		padding-right: 1em;
 	}
 	
+	.tag
+	{
+		font-weight: bold;
+	}
+	
 	.important .message
 	{
 		background: white url('images/blue_exclamation.png') 103% 50% no-repeat;
@@ -99,6 +109,7 @@
 		border: 3px solid #69E8E4;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
+		font-weight: 400;
 	}
 	
 	.event .message
@@ -109,6 +120,7 @@
 		border: 3px solid #69E8E4;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
+		font-weight: 400;
 	}
 
 	.searchresult
