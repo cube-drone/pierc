@@ -103,6 +103,8 @@ a
 	
 	.important .message
 	{
+		overflow: hidden;
+		text-indent: -20px;
 		background: white url('images/blue_exclamation.png') 103% 50% no-repeat;
 		font-size: 130%;
 		padding: 0.7em;
@@ -114,6 +116,8 @@ a
 	
 	.event .message
 	{
+		overflow: hidden;
+		text-indent: -20px;
 		background: white url('images/blue_at.png') 103% 50% no-repeat;
 		font-size: 130%;
 		padding: 0.7em;
