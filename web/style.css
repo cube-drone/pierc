@@ -41,7 +41,7 @@
 	font-family: Palatino;
 	font-size: 110%;
 	list-style-type: none;
-	border-spacing: collapse;
+	border-spacing: separate;
 }
 
 	#irc .name
@@ -89,6 +89,26 @@
 		width: 100px;
 		text-align: right;
 		padding-right: 1em;
+	}
+	
+	.important .message
+	{
+		background: white url('images/blue_exclamation.png') 103% 50% no-repeat;
+		font-size: 130%;
+		padding: 0.7em;
+		border: 3px solid #69E8E4;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+	
+	.event .message
+	{
+		background: white url('images/blue_at.png') 103% 50% no-repeat;
+		font-size: 130%;
+		padding: 0.7em;
+		border: 3px solid #69E8E4;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
 	}
 
 	.searchresult

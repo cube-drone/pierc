@@ -258,7 +258,7 @@ function tag( tagname )
 	$.getJSON("json.php", {'type':'tag', 'tag':tagname, 'n':15 },
         function(data){
         	$(data).each( function(i, item) { 	
-        										$(irc_render(item)).addClass("tag").appendTo("#irc");
+        										$(irc_render(item)).appendTo("#irc");
         									});
         									
         	$('#loading').hide('slow');
@@ -274,7 +274,18 @@ function tag( tagname )
 function irc_render( item ) 
 {
 	if ( item.hidden != "F" ) { return "";} 
-	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+"'>";
+	
+	var message_tag = /^\s*([A-Za-z]*):/.exec(item.message);
+	if (message_tag) 
+	{
+		message_tag = message_tag[1].toLowerCase();
+	}
+	else
+	{
+		message_tag = "";
+	}
+	
+	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+" "+message_tag+"'>";
 	construct_string += "<td class='name'><a href='#tag-"+html_escape(item.name)+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
 	
 	if 		(item.type == "pubmsg") { construct_string += ":&nbsp;";}
