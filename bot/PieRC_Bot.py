@@ -23,6 +23,7 @@ nick = irc_settings["nick"]
 nick_reg = re.compile(nick)
 disconnect_reg = re.compile("(disconnect)|(quit)|(leave)|(go away)|(vacate)|(gone)(?iu)")
 echo_reg = re.compile("(echo)(?iu)")
+link_reg = re.compile("http://\S!(?iu)")
 
 
 class Logger(irclib.SimpleIRCClient):
@@ -99,6 +100,9 @@ class Logger(irclib.SimpleIRCClient):
 				self.echo = True
 			elif echo_reg.search(text) and self.echo:
 				self.echo = False
+			
+			connection.privmsg(channel, markov_chatter() )
+			
 		if self.echo:
 			connection.privmsg(channel, text)
 
@@ -111,6 +115,26 @@ def main():
 		print x
 		sys.exit(1)
 	c.start()
+
+def markov_chatter():
+	# get chatter.txt, read and delete a line at the end of the file
+	
+	try:
+		chatterfile = open("chatter.txt", 'r+')
+		chatterfile.seek(0, 2)
+		eof = chatterfile.tell()
+		counter = -1
+		while 1:
+			counter -= 1
+			chatterfile.seek(counter, 1)
+			line = chatterfile.read()
+			if line.startswith("\n"):
+				chatterfile.seek(counter + 1, 1)
+				chatterfile.truncate( eof + counter ) 
+				return line[1:].strip("\n")
+	except IOError:
+		return "I'm broken.  Tell me to go away before I cough up my entrails. :(" 
+		
 
 if __name__ == "__main__":
 	main()

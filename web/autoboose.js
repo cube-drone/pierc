@@ -348,7 +348,6 @@ function datetimeify( mysql_date_string )
 function human_date( date )
 {
 	var td = new Date();
-	console.log( td.toDateString() );
 	if( date.getDate() == td.getDate() && 
 		date.getMonth() == td.getMonth() &&
 		date.getYear() == td.getYear() ) { return "Today"; }
@@ -360,9 +359,6 @@ function human_date( date )
 		date.getMonth() == yesterday.getMonth() &&
 		date.getYear() == yesterday.getYear() ) { return "Yesterday"; }
 	
-	console.log( date.getDate() + " " + td.getDate() );
-	console.log( date.getMonth() + " " + td.getMonth() );
-	console.log( date.getYear() + " " + td.getYear() );
 	return date.toLocaleDateString();
 }
 
