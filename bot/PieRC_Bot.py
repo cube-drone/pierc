@@ -7,6 +7,7 @@ from irclib import nm_to_n, nm_to_h, irc_lower, ip_numstr_to_quad, ip_quad_to_nu
 import irclib
 import sys
 import re
+import time
 
 #mine
 import PieRC_Database
@@ -20,7 +21,7 @@ channel = irc_settings["channel"]
 port = int(irc_settings["port"])
 nick = irc_settings["nick"]
 
-nick_reg = re.compile(nick)
+nick_reg = re.compile(nick + "(?iu)")
 disconnect_reg = re.compile("(disconnect)|(quit)|(leave)|(go away)|(vacate)|(gone)(?iu)")
 echo_reg = re.compile("(echo)(?iu)")
 link_reg = re.compile("http://\S!(?iu)")
@@ -101,6 +102,7 @@ class Logger(irclib.SimpleIRCClient):
 			elif echo_reg.search(text) and self.echo:
 				self.echo = False
 			
+			time.sleep( 2 )
 			connection.privmsg(channel, markov_chatter() )
 			
 		if self.echo:
