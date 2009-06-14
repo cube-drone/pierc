@@ -77,6 +77,7 @@ class Logger(irclib.SimpleIRCClient):
 			connection.join(self.target)
 
 	def on_disconnect(self, connection, event):
+		self.db.commit()
 		sys.exit(0)
 		
 	def on_ping(self, connection, event):
