@@ -82,7 +82,7 @@ class pie_db extends db_class
 		$channel = mysql_real_escape_string( $channel );
 		$id = (int)$id;
 		$query = "
-			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY time DESC, id DESC ";
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY time DESC, id DESC LIMIT 500";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
@@ -116,7 +116,6 @@ class pie_db extends db_class
 	
 	public function get_context( $channel, $id, $n)
 	{
-	
 		$channel = mysql_real_escape_string($channel);
 		$n = (int)$n + (int)$offset;
 		$offset = (int) $offset;
@@ -149,6 +148,7 @@ class pie_db extends db_class
 	public function get_search_results( $channel, $search, $n )
 	{
 		$search = mysql_real_escape_string($search);
+		$channel = mysql_real_escape_string($channel);
 		
 		$searchquery = " WHERE channel = '$channel' ";
 		$searcharray = split(" ", $search);
@@ -157,12 +157,29 @@ class pie_db extends db_class
 			$searchquery .= "AND message LIKE '%".mysql_real_escape_string($searchterm)."%' ";
 		}
 		
-		$channel = mysql_real_escape_string($search);
 		$n = (int)$n;
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden 
 				FROM main 
-			$searchquery ORDER BY id LIMIT $n;";
+			$searchquery ORDER BY id DESC LIMIT $n;";
+		
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		return array_reverse($this->hashinate($results));
+	}
+	
+	public function get_tag( $channel, $tag, $n )
+	{
+		$tag = mysql_real_escape_string($tag);
+		$channel = mysql_real_escape_string($channel);
+		$n = (int)$n;
+		
+		$query = "
+			SELECT id, channel, name, time, message, type, hidden 
+				FROM main 
+			WHERE message LIKE '".$tag.":%' ORDER BY id DESC LIMIT $n;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }

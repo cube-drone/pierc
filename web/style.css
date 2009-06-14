@@ -83,6 +83,14 @@
 		margin: 0.5em 0.5em 0.5em 0.5em;
 	}
 
+	#irc  .date
+	{
+		font-size: small;
+		width: 100px;
+		text-align: right;
+		padding-right: 1em;
+	}
+
 	.searchresult
 	{
 		border-spacing: 0 20px;

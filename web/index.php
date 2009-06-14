@@ -20,7 +20,9 @@
 		<input id="searchbox" tabindex="1" type="text" />
 		<input tabindex="2" type="submit" value="Search"/>
 	</form>
-	<a id="home" href="#">Home</a> 
+	<a id="home" href="#">Home</a> |
+	<a id="events" href="#">Events</a> |
+	<a id="important" href="#">Important</a>
 	<span id="options"> |
 	<a id="prev" href="#"><<</a> | 
 	<a id="next" href="#">>></a> </span>

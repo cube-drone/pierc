@@ -18,13 +18,17 @@ $(function() {
     setInterval("refresh()", irc_refresh_in_seconds * 1000);
     setInterval("hashnav_check()", page_hash_check_in_seconds * 1000);
     
-    hashnav();
+    if( ! hashnav() ) { top(); }
 	
 	//Toolbar setup
 	$("#search").submit( search );
 	$("#home").click( top );
 	$("#prev").click( page_up );
 	$("#next").click( page_down );
+	$("#events").click( events );
+	$("#important").click( important );
+	
+	
 });
 
 // Navigate around the site based on the site hash.
@@ -37,22 +41,25 @@ function hashnav()
 		var searchterm = hash.substring( 8, hash.length );
 		$("#searchbox").attr({"value":searchterm});
 		search();
+		return true;
+	}
+	if( hash.substring(1, 4) == "tag")
+	{
+		var tagname = hash.substring( 5, hash.length );
+		tag( tagname );
+		return true;
 	}
 	else if (hash.substring(1, 3) == "id") 
 	{
 		var id = hash.substring( 4, hash.length );
 		context(id);
+		return true;
 	}
 	else if (hash.substring(1, 8) == "loading") 
 	{
-		return;
+		return true;
 	}
-	else
-	{
-		// load the top 50 (or top N)
-		$("#searchbox").attr({"value":hash.substring(1,7)});
-		top();
-	}
+	return false;
 }
 
 // Check the current hash against the hash in the url. If they're different, perform hashnav.
@@ -98,7 +105,7 @@ function refresh()
 {
 	if( !refresh_on ) { return; }
 	$("#loading").show("fast");
-	$.getJSON("json.php", { 'id': last_id },
+	$.getJSON("json.php", { 'type':'update', 'id': last_id },
         function(data){
         	$(data).each( function(i, item) { 
         										try
@@ -143,6 +150,7 @@ function search_for( searchvalue )
         									} );
         $("#irc").addClass("searchresult");
         $('#loading').hide('slow');
+        scroll_to_bottom();
         
         });
 }
@@ -167,7 +175,7 @@ function context(id)
 	$('#loading').show('fast');
 	
 	// Ajax call to get 'context' (find the comment at id 'id' and 'n' spaces around it). 
-	$.getJSON("json.php", {'id':id, 'n':20},
+	$.getJSON("json.php", {'type':'context', 'id':id },
         function(data){
         	first_id = data[0].id;
         	$(data).each( function(i, item) { 	
@@ -190,7 +198,7 @@ function page_up()
 {	
 	// Ajax call to populate table
 	$('#loading').show('fast');
-	$.getJSON("json.php", {'id':first_id, 'n':20, 'context':'before' },
+	$.getJSON("json.php", {'type':'context', 'id':first_id, 'n':20, 'context':'before' },
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").prependTo("#irc");
         	$(data).each( function(i, item) { 	
@@ -208,7 +216,7 @@ function page_down()
 {	
 	$('#loading').show('fast');
 	
-	$.getJSON("json.php", {'id':last_id, 'n':20, 'context':'after' },
+	$.getJSON("json.php", {'type':'context', 'id':last_id, 'n':20, 'context':'after' },
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").appendTo("#irc");
         	$(data).each( function(i, item) { 	
@@ -222,12 +230,54 @@ function page_down()
     return false;
 }
 
+function events ( )
+{
+	tag( "event" );
+	return false;
+}
+
+function important( )
+{
+	tag( "important" );
+	return false;
+}
+
+// Load a tag
+function tag( tagname ) 
+{
+	window.location.hash = "tag-"+tagname;
+    hash = window.location.hash;
+
+	clear();
+	refresh_on = false;
+	$("#options").hide();
+	$('#irc').removeClass("searchresult");
+	
+	$('#loading').show('fast');
+	
+	console.log("tag: " + tagname );
+	
+	$.getJSON("json.php", {'type':'tag', 'tag':tagname, 'n':15 },
+        function(data){
+        	$(data).each( function(i, item) { 	
+        										$(irc_render(item)).addClass("tag").appendTo("#irc");
+        									});
+        									
+        	$('#loading').hide('slow');
+        	scroll_to_bottom();
+        });
+    return false;
+}
+
+
+//-----------------------------------------------
+
 // Convert a single IRC message into a table row
 function irc_render( item ) 
 {
 	if ( item.hidden != "F" ) { return "";} 
 	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+"'>";
-	construct_string += "<td class='name'>" + html_escape(item.name) + "&nbsp;</td><td class='message'>";
+	construct_string += "<td class='name'><a href='#tag-"+html_escape(item.name)+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
 	
 	if 		(item.type == "pubmsg") { construct_string += ":&nbsp;";}
 	else if (item.type == "join") { construct_string += "has joined #" + html_escape(item.channel); }
@@ -236,9 +286,18 @@ function irc_render( item )
 	else if (item.type == "nick") { construct_string += "has changed his nick!";}
 	else if (item.type == "action") { } 
 
-	construct_string += html_escape(item.message) + "</td>";
+	construct_string += link_replace(html_escape(item.message)) + "</td>";
+	var message_date = datetimeify(item.time);
+	var pretty_date = human_date(message_date);
+	construct_string += "<td class='date'>" + pretty_date + "</td>";
 	construct_string += "<td class='context'><a onclick='loading' href='#id-"+item.id+"'>Context</a></td> </tr>";
 	return $(construct_string);
+}
+
+// Make links clickable, and images images
+function link_replace( string )
+{
+	return string.replace( /(http:&#x2F;&#x2F;\S*)/g , "<a href='$1'>$1</a>");
 }
 
 // Show the 'loading' widget. 
@@ -265,6 +324,46 @@ function scroll_to_id(id)
 	$target = $("#irc-"+id);
 	var targetOffset = $target.offset().top;
 	$('html,body').animate({scrollTop: targetOffset}, 1000);
+}
+
+// MySQL date string (2009-06-13 18:10:59 / yyyy-mm-dd hh:mm:ss )
+function datetimeify( mysql_date_string )
+{
+	var dt = new Date();
+	var space_split = mysql_date_string.split(" ");
+	var d = space_split[0];
+	var t = space_split[1];
+	var date_split = d.split("-");
+	dt.setFullYear( date_split[0] );
+	dt.setMonth( date_split[1]-1 );
+	dt.setDate( date_split[2] );
+	var time_split = t.split(":");
+	dt.setHours( time_split[0] );
+	dt.setMinutes( time_split[1] );
+	dt.setSeconds( time_split[2] );
+	return dt;
+}
+
+// human_date - tries to construct a human-readable date
+function human_date( date )
+{
+	var td = new Date();
+	console.log( td.toDateString() );
+	if( date.getDate() == td.getDate() && 
+		date.getMonth() == td.getMonth() &&
+		date.getYear() == td.getYear() ) { return "Today"; }
+	
+	var yesterday = new Date();
+	yesterday.setDate( td.getDate() - 1 );
+		
+	if( date.getDate() == yesterday.getDate() && 
+		date.getMonth() == yesterday.getMonth() &&
+		date.getYear() == yesterday.getYear() ) { return "Yesterday"; }
+	
+	console.log( date.getDate() + " " + td.getDate() );
+	console.log( date.getMonth() + " " + td.getMonth() );
+	console.log( date.getYear() + " " + td.getYear() );
+	return date.toLocaleDateString();
 }
 
 // Shouldn't this be part of javascript somewhere? 
