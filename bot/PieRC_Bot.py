@@ -104,7 +104,13 @@ class Logger(irclib.SimpleIRCClient):
 				self.echo = False
 			
 			time.sleep( 2 )
-			connection.privmsg(channel, markov_chatter() )
+			blahblah = markov_chatter();
+			connection.privmsg(channel, blahblah )
+			self.db.insert_now( channel.strip("#"), 			#channel
+								"AutoBoose", 					#name
+								blahblah, 						#message
+								'pubmsg'	 					#message type
+								)
 			
 		if self.echo:
 			connection.privmsg(channel, text)

@@ -49,6 +49,11 @@ a
 	border-spacing: separate;
 }
 
+	#irc tr:nth-of-type(2n)
+	{
+		background-color: #DEDEDE;
+	}
+
 	#irc .name
 	{
 		text-align: right;
@@ -64,22 +69,22 @@ a
 
 	}
 
-	#irc  .join
+	#irc  .join, #irc .join a
 	{
 		color: green;
 	}
 
-	#irc  .part
+	#irc  .part, #irc .part a
 	{
 		color: salmon;
 	}
 
-	#irc  .action
+	#irc  .action, #irc .action a
 	{
 		color: purple;
 	}
 
-	#irc  .topic
+	#irc .topic, #irc .topic a
 	{
 		color: blue;
 		border-top: 1px solid blue;

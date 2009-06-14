@@ -150,6 +150,7 @@ function search_for( searchvalue )
         									} );
         $("#irc").addClass("searchresult");
         $('#loading').hide('slow');
+        
         scroll_to_bottom();
         
         });
@@ -326,7 +327,9 @@ function clear()
 // Scroll to the bottom of the page
 function scroll_to_bottom()
 {
-	scroll_to_id(last_id)
+	$target = $("#bottom");
+	var targetOffset = $target.offset().top;
+	$('html,body').animate({scrollTop: targetOffset}, 1000);
 }
 
 // Attempt to scroll to the id of the item specified.

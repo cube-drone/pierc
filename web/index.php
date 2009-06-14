@@ -35,6 +35,7 @@
 	
 	<table id="irc">
 	</table>
+	<div id="bottom"></div>
 	
 </div>
 
