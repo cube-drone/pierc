@@ -151,7 +151,7 @@ class pie_db extends db_class
 		$channel = mysql_real_escape_string($channel);
 		
 		$searchquery = " WHERE channel = '$channel' ";
-		$searcharray = split(" ", $search);
+		$searcharray = split("[\s(%20)(%25)(%2520)|]", $search);
 		foreach($searcharray as $searchterm )
 		{
 			$searchquery .= "AND message LIKE '%".mysql_real_escape_string($searchterm)."%' ";
