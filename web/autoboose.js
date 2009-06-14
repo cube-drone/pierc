@@ -255,8 +255,6 @@ function tag( tagname )
 	
 	$('#loading').show('fast');
 	
-	console.log("tag: " + tagname );
-	
 	$.getJSON("json.php", {'type':'tag', 'tag':tagname, 'n':15 },
         function(data){
         	$(data).each( function(i, item) { 	
