@@ -96,6 +96,14 @@ if ( $_GET['type'] == 'tag' && isset( $_GET['tag']) )
 	return;
 }
 
+// LAST SEEN - when was the last time name n posted?
+if( $_GET['type'] == 'lastseen' && isset( $_GET['user'] ) )
+{
+	$lines = $pdb->get_lastseen( $channel, $_GET['user'] ); 
+	print json_encode( $lines );
+	return;
+}
+
 // DEFAULT - get the last $n results
 
 $lines = $pdb->get_last_n_lines( $channel, $n );

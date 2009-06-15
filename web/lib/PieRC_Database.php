@@ -187,6 +187,23 @@ class pie_db extends db_class
 		
 		return array_reverse($this->hashinate($results));
 	}
+	
+	public function get_lastseen( $channel, $user )
+	{
+		$user = mysql_real_escape_string($user);
+		$channel = mysql_real_escape_string($channel);
+		
+		$query = "
+			SELECT time 
+				FROM main 
+			WHERE name = '".$user."' ORDER BY id DESC LIMIT 1;";
+		
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		return $this->hashinate($results);
+	}
 }
 ?>
 
