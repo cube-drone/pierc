@@ -24,7 +24,7 @@ nick = irc_settings["nick"]
 nick_reg = re.compile(nick + "(?iu)")
 disconnect_reg = re.compile("(disconnect)|(quit)|(leave)|(go away)|(vacate)|(gone)|(vamous)(?iu)")
 echo_reg = re.compile("(echo)(?iu)")
-last_seen = re.compile("last *seen (?P<username>[A-Za-z_]*)(?iu)")
+last_seen = re.compile("last *seen (?P<username>[\S]*)(?iu)")
 link_reg = re.compile("http://\S!(?iu)")
 
 
