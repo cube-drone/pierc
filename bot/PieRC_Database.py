@@ -1,5 +1,6 @@
 import MySQLdb
 import config
+import datetime
 
 class PieRC_Database:
 	
@@ -55,6 +56,21 @@ class PieRC_Database:
 		
 	def commit(self):
 		self.conn.commit()
+		
+	def lastseen(self, username):
+		""" When was the last time username was seen? """
+		query = """
+			SELECT time 
+				FROM main 
+				WHERE name = %s ORDER BY id DESC LIMIT 1;
+				"""
+		self.cursor.execute( query, (username, ) )
+		result = self.cursor.fetchone()
+		if result:
+			return result[0]
+		else:
+			return False
+		
 
 if __name__ == "__main__":
 	mysql_config = config.config("mysql_config.txt")
@@ -63,8 +79,7 @@ if __name__ == "__main__":
 						mysql_config["database"], 
 						mysql_config["user"],
 						mysql_config["password"])
-	db.insert_now("sample", "danly", "Covered with beeeees!", "normal")
-	db.commit()
+	print db.lastseen("yangman")
         
         
         

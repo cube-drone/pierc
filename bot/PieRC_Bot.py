@@ -22,8 +22,9 @@ port = int(irc_settings["port"])
 nick = irc_settings["nick"]
 
 nick_reg = re.compile(nick + "(?iu)")
-disconnect_reg = re.compile("(disconnect)|(quit)|(leave)|(go away)|(vacate)|(gone)(?iu)")
+disconnect_reg = re.compile("(disconnect)|(quit)|(leave)|(go away)|(vacate)|(gone)|(vamous)(?iu)")
 echo_reg = re.compile("(echo)(?iu)")
+last_seen = re.compile("last *seen (?P<username>[A-Za-z_]*)(?iu)")
 link_reg = re.compile("http://\S!(?iu)")
 
 
@@ -100,8 +101,20 @@ class Logger(irclib.SimpleIRCClient):
 				self.disconnect()
 			if echo_reg.search(text) and not self.echo:
 				self.echo = True
+				return;
 			elif echo_reg.search(text) and self.echo:
 				self.echo = False
+				return;
+			
+			last_seen_group = last_seen.search(text)
+			if last_seen_group:
+				username = last_seen_group.group("username")
+				lastseen = self.db.lastseen(username)
+				if lastseen:
+					connection.privmsg(channel, lastseen)
+				else:
+					connection.privmsg(channel, "I've never seen " + username)
+				return;
 			
 			time.sleep( 2 )
 			blahblah = markov_chatter();
