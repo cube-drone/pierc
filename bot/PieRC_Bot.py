@@ -13,6 +13,7 @@ import time
 import PieRC_Database
 import config
 import CommandLine
+import Feeder
 
 
 # Configuration
@@ -44,6 +45,7 @@ class Logger(irclib.SimpleIRCClient):
 									mysql_config["password"])
 		
 		self.commandline = CommandLine.CommandExecutor( self.db )
+		self.feeder = Feeder.Feeder( )
 		
 	def _dispatcher(self, c, e):
 	# This determines how a new event is handled. 
@@ -86,6 +88,14 @@ class Logger(irclib.SimpleIRCClient):
 		
 	def on_ping(self, connection, event):
 		self.db.commit()
+		new_stuff = self.feeder.update()
+		for post in new_stuff:
+			connection.privmsg(channel, post )
+			self.db.insert_now( channel.strip("#"), 			#channel
+								"AutoBoose", 					#name
+								post, 							#message
+								'pubmsg'	 					#message type
+								)
 
 	def on_pubmsg(self, connection, event):
 		text = event.arguments()[0]
@@ -102,6 +112,10 @@ class Logger(irclib.SimpleIRCClient):
 				connection.privmsg(channel, "Aww.")
 				connection.action(channel, "... TRANSFORM AND ROLL OUT!")
 				self.disconnect()
+				
+			if text.split(" ")[1] and text.split(" ")[1] == "ping":
+				self.on_ping(connection, event)
+				return
 			
 			response = self.commandline.run_commands( text )
 			
@@ -123,4 +137,4 @@ def main():
 	c.start()
 
 if __name__ == "__main__":
-	main()
+	main() 

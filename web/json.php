@@ -61,7 +61,7 @@ if ($_GET['type'] == 'feeds')
 
 # REDDITORS - Redditors on #sfucsss
 if ($_GET['type'] == 'reddit')
-{
+{	
 	print json_encode( $pdb->get_redditors() );
 	return;
 }
