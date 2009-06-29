@@ -36,14 +36,23 @@ class PieRC_Database:
 			
 			CREATE TABLE IF NOT EXISTS feeds
 			(
+<<<<<<< .mine
+				id		INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, 	
+				url		TEXT,
+=======
 				id	INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, 	
 				url	TEXT,
+>>>>>>> .r43
 				name	VARCHAR(30)
 			) engine = InnoDB;
 			
 			CREATE TABLE IF NOT EXISTS redditusers
 			(
+<<<<<<< .mine
+				id		INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+=======
 				id	INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+>>>>>>> .r43
 				reddituser	VARCHAR(30)
 			)engine = InnoDB;
 			""")
@@ -82,6 +91,82 @@ class PieRC_Database:
 			return result[0]
 		else:
 			return False
+	
+	def feeds(self):
+		""" List the feeds that AutoBoose watches """
+		query = """
+			SELECT id, name
+				FROM feeds;
+				"""
+		self.cursor.execute( query )
+		result = self.cursor.fetchall()
+		if result:
+			return result
+		else:
+			return False
+			
+	def feed(self, id):
+		""" Get the URL of a feed that AutoBoose watches """
+		query = """
+			SELECT name, url
+				FROM feeds WHERE id = %s;
+				"""
+		self.cursor.execute( query, (id, ) )
+		result = self.cursor.fetchone()
+		if result:
+			return result
+		else:
+			return False
+			
+	def addfeed(self, name, url):
+		""" Add a feed """
+		query = """
+			INSERT INTO feeds (name, url) VALUES (%s, %s);
+				"""
+		
+		print query;
+		self.cursor.execute( query, (name, url) )
+		return True
+	
+	def deletefeed(self, id):
+		""" Add a feed """
+		query = """
+			DELETE FROM feeds WHERE id = %s;
+				"""
+		print query;
+		self.cursor.execute( query, (id, ) )
+		return True
+		
+	def reddits(self):
+		""" List the reddit users that AutoBoose watches """
+		query = """
+			SELECT id, reddituser
+				FROM redditusers;
+				"""
+		self.cursor.execute( query )
+		result = self.cursor.fetchall()
+		if result:
+			return result
+		else:
+			return False
+			
+	def addreddit(self, name):
+		""" Add a reddit user """
+		query = """
+			INSERT INTO redditusers (reddituser) VALUES (%s);
+				"""
+		print query;
+		self.cursor.execute( query, (name, ) )
+		return True
+	
+	def deletereddit(self, id):
+		""" Add a feed """
+		query = """
+			DELETE FROM redditusers WHERE id = %s;
+				"""
+		print query;
+		self.cursor.execute( query, (id, ) )
+		return True
 		
 
 if __name__ == "__main__":

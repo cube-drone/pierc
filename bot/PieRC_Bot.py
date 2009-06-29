@@ -12,6 +12,7 @@ import time
 #mine
 import PieRC_Database
 import config
+import CommandLine
 
 
 # Configuration
@@ -41,6 +42,8 @@ class Logger(irclib.SimpleIRCClient):
 									mysql_config["database"], 
 									mysql_config["user"],
 									mysql_config["password"])
+		
+		self.commandline = CommandLine.CommandExecutor( self.db )
 		
 	def _dispatcher(self, c, e):
 	# This determines how a new event is handled. 
@@ -99,34 +102,15 @@ class Logger(irclib.SimpleIRCClient):
 				connection.privmsg(channel, "Aww.")
 				connection.action(channel, "... TRANSFORM AND ROLL OUT!")
 				self.disconnect()
-			if echo_reg.search(text) and not self.echo:
-				self.echo = True
-				return;
-			elif echo_reg.search(text) and self.echo:
-				self.echo = False
-				return;
 			
-			last_seen_group = last_seen.search(text)
-			if last_seen_group:
-				username = last_seen_group.group("username")
-				lastseen = self.db.lastseen(username)
-				if lastseen:
-					connection.privmsg(channel, lastseen)
-				else:
-					connection.privmsg(channel, "I've never seen " + username)
-				return;
+			response = self.commandline.run_commands( text )
 			
-			time.sleep( 2 )
-			blahblah = markov_chatter();
-			connection.privmsg(channel, blahblah )
+			connection.privmsg(channel, response )
 			self.db.insert_now( channel.strip("#"), 			#channel
 								"AutoBoose", 					#name
-								blahblah, 						#message
+								response, 						#message
 								'pubmsg'	 					#message type
 								)
-			
-		if self.echo:
-			connection.privmsg(channel, text)
 
 def main():
 
@@ -137,26 +121,6 @@ def main():
 		print x
 		sys.exit(1)
 	c.start()
-
-def markov_chatter():
-	# get chatter.txt, read and delete a line at the end of the file
-	
-	try:
-		chatterfile = open("chatter.txt", 'r+')
-		chatterfile.seek(0, 2)
-		eof = chatterfile.tell()
-		counter = -1
-		while 1:
-			counter -= 1
-			chatterfile.seek(counter, 1)
-			line = chatterfile.read()
-			if line.startswith("\n"):
-				chatterfile.seek(counter + 1, 1)
-				chatterfile.truncate( eof + counter ) 
-				return line[1:].strip("\n")
-	except IOError:
-		return "I'm broken.  Tell me to go away before I cough up my entrails. :(" 
-		
 
 if __name__ == "__main__":
 	main()
