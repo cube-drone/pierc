@@ -43,6 +43,14 @@ if ( isset( $_GET['search'] ) )
 	return;
 }	
 
+# USER
+if ( $_GET['type'] == 'user' ) 
+{
+	$lines = $pdb->get_user( $channel, $_GET['user'], $n); 
+	print json_encode( $lines );
+	return;
+}
+
 # CONTEXT - results centered about an ID value
 if( $_GET['type'] == 'context' )
 {

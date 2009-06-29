@@ -204,6 +204,24 @@ class pie_db extends db_class
 		
 		return $this->hashinate($results);
 	}
+	
+	public function get_user( $channel, $user, $n )
+	{
+		$user = mysql_real_escape_string($user);
+		$channel = mysql_real_escape_string($channel);
+		$n = (int) $n;
+		
+		$query = "
+			SELECT id, channel, name, time, message, type
+				FROM main 
+			WHERE name = '".$user."' ORDER BY id DESC LIMIT ".$n.";";
+		
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		return $this->hashinate($results);
+	}
 }
 ?>
 
