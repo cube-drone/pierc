@@ -186,6 +186,7 @@ function context(id)
         					
         	// After
         	scroll_to_id( id );
+        	$('#irc-'+id).animate({fontSize: "150%"}, 2500);
         	$('#loading').hide('slow');
         	window.location.hash = "id-"+id;
         	hash = window.location.hash;
@@ -336,7 +337,7 @@ function scroll_to_bottom()
 function scroll_to_id(id)
 {
 	$target = $("#irc-"+id);
-	var targetOffset = $target.offset().top;
+	var targetOffset = $target.offset().top - 100;
 	$('html,body').animate({scrollTop: targetOffset}, 1000);
 }
 
