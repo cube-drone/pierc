@@ -24,7 +24,7 @@ class PieRC_Database:
 		self.cursor.execute ("DROP TABLE IF EXISTS main;")
 		self.cursor.execute(
 		"""
-			CREATE TABLE main
+			CREATE TABLE main IF NOT EXISTS
 			(
 				id      INT(12) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				channel VARCHAR(16),
@@ -34,6 +34,19 @@ class PieRC_Database:
 				type    VARCHAR(10),
 				hidden  CHAR(1)
 			) engine = InnoDB;
+			
+			CREATE TABLE feeds IF NOT EXISTS
+			(
+				id		INT(5), 	
+				url		TEXT,
+				name	VARCHAR(30)
+			) engine = InnoDB;
+			
+			CREATE TABLE redditusers IF NOT EXISTS
+			(
+				id		INT(5),
+				reddituser	VARCHAR(30)
+			)
 			""")
 
 	def insert_line(self, channel, name, time, message, msgtype, hidden = "F"):
@@ -79,7 +92,7 @@ if __name__ == "__main__":
 						mysql_config["database"], 
 						mysql_config["user"],
 						mysql_config["password"])
-	print db.lastseen("yangman")
+	print db.create_table() 
         
         
         
