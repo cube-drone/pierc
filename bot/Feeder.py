@@ -24,8 +24,19 @@ class Feeder:
 				new.append( x.title.string + " --> " + x.link.string  )
 		return new;
 		
+	def top5(self):
+		xml = self.get_feed()
+		new = []
+		counter = 0
+		for x in xml('item'):
+			new.append( x.title.string + " --> " + x.link.string  )
+			counter += 1
+			if counter == 5:
+				break
+		return new;
+		
 if __name__ == "__main__":
 	fdr = Feeder()
-	print fdr.update()
+	print fdr.top5()
 	
 		

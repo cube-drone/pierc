@@ -116,6 +116,17 @@ class Logger(irclib.SimpleIRCClient):
 			if text.split(" ")[1] and text.split(" ")[1] == "ping":
 				self.on_ping(connection, event)
 				return
+				
+			if text.split(" ")[1] and text.split(" ")[1] == "ping":
+				posts = self.feeder.top5()
+				for post in posts:
+					connection.privmsg(channel, post )
+					self.db.insert_now( channel.strip("#"), 			#channel
+										"AutoBoose", 					#name
+										post, 							#message
+										'pubmsg'	 					#message type
+										)
+				return
 			
 			response = self.commandline.run_commands( text )
 			
