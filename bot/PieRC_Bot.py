@@ -117,7 +117,7 @@ class Logger(irclib.SimpleIRCClient):
 				self.on_ping(connection, event)
 				return
 				
-			if text.split(" ")[1] and text.split(" ")[1] == "ping":
+			if text.split(" ")[1] and text.split(" ")[1] == "top5":
 				posts = self.feeder.top5()
 				for post in posts:
 					connection.privmsg(channel, post )
