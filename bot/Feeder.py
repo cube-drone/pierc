@@ -21,9 +21,10 @@ class Feeder:
 		new = []
 		for x in xml('item'):
 			if not x.title.string in self.already_viewed:
+				self.already_viewed.append( x.title.string )
 				new.append( x.title.string + " --> " + x.link.string  )
 		return new;
-		
+	
 	def top5(self):
 		xml = self.get_feed()
 		new = []
