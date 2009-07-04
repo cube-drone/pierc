@@ -46,7 +46,7 @@ class Logger(irclib.SimpleIRCClient):
 		
 		self.commandline = CommandLine.CommandExecutor( self.db )
 		self.feeder = Feeder.Feeder( )
-		
+	
 	def _dispatcher(self, c, e):
 	# This determines how a new event is handled. 
 		if(e.eventtype() == "topic" or 
@@ -90,6 +90,7 @@ class Logger(irclib.SimpleIRCClient):
 		self.db.commit()
 		new_stuff = self.feeder.update()
 		for post in new_stuff:
+			post = post.encode("ascii", "xmlcharrefreplace")
 			connection.privmsg(channel, post )
 			self.db.insert_now( channel.strip("#"), 			#channel
 								"AutoBoose", 					#name
