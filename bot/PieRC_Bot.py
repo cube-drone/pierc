@@ -12,41 +12,34 @@ import time
 #mine
 import PieRC_Database
 import config
-import CommandLine
-import Feeder
 
 
 # Configuration
-irc_settings = config.config("irc_config.txt")
-server = irc_settings["server"]
-channel = irc_settings["channel"]
-port = int(irc_settings["port"])
-nick = irc_settings["nick"]
-
-nick_reg = re.compile("^" + nick + "[:,](?iu)")
-disconnect_reg = re.compile("(\sdisconnect\s)|(\squit\s)(?iu)")
-echo_reg = re.compile("(echo)(?iu)")
-last_seen = re.compile("last *seen (?P<username>[\S]*)(?iu)")
-link_reg = re.compile("http://\S!(?iu)")
-
 
 class Logger(irclib.SimpleIRCClient):
-	def __init__(self, target):
+	
+	def __init__(self, server, port, channel, nick, mysql_server, mysql_port, mysql_database, mysql_user, mysql_password):
+	
 		irclib.SimpleIRCClient.__init__(self)
-		self.target = target
+		self.server = server
+		self.port = port
+		self.target = channel
+		self.channel = channel
+		self.nick = nick
+		
+		self.nick_reg = re.compile("^" + nick + "[:,](?iu)")
+		self.disconnect_reg = re.compile("(\sdisconnect)|(\squit)(?iu)")
+		
 		self.echo = False
 		
 		# On creating the Bot, instantiate the database 
-		mysql_config = config.config("mysql_config.txt")
-		self.db = PieRC_Database.PieRC_Database( mysql_config["server"],
-									int(mysql_config["port"]),
-									mysql_config["database"], 
-									mysql_config["user"],
-									mysql_config["password"])
+		self.db = PieRC_Database.PieRC_Database( mysql_server,
+												 mysql_port,
+												 mysql_database, 
+											   	 mysql_user,
+												 mysql_password)
+		self.connect(self.server, self.port, self.nick)
 		
-		self.commandline = CommandLine.CommandExecutor( self.db )
-		self.feeder = Feeder.Feeder( )
-	
 	def _dispatcher(self, c, e):
 	# This determines how a new event is handled. 
 		if(e.eventtype() == "topic" or 
@@ -64,12 +57,20 @@ class Logger(irclib.SimpleIRCClient):
 			except IndexError:
 				text = ""
 		
-			# Most of the events are pushed straight to the DB.
-			self.db.insert_now( channel.strip("#"), 			#channel
+			# Most of the events are pushed to the buffer. 
+			if e.eventtype() == "nick":
+				self.db.insert_now( self.channel.strip("#"), 		#channel
+								source, 						#name
+								e.target(), 					#message
+								e.eventtype() 					#message type
+								)
+			else:
+				self.db.insert_now( self.channel.strip("#"), 		#channel
 								source, 						#name
 								text, 							#message
 								e.eventtype() 					#message type
 								)
+			
 		
 		m = "on_" + e.eventtype()	
 		if hasattr(self, m):
@@ -84,69 +85,53 @@ class Logger(irclib.SimpleIRCClient):
 
 	def on_disconnect(self, connection, event):
 		self.db.commit()
-		sys.exit(0)
 		
 	def on_ping(self, connection, event):
-		self.db.commit()
-		new_stuff = self.feeder.update()
-		for post in new_stuff:
-			post = post.encode("ascii", "xmlcharrefreplace")
-			connection.privmsg(channel, post )
-			self.db.insert_now( channel.strip("#"), 			#channel
-								"AutoBoose", 					#name
-								post, 							#message
-								'pubmsg'	 					#message type
+		try:
+			self.db.commit()
+		except:
+			print "Database Commit Failed! Let's wait a bit!" 
+			connection.privmsg(self.channel, "cough cough" )
+			self.db.insert_now( self.channel.strip("#"), 		#channel
+								self.nick, 						#name
+								"coughs" , 						#message
+								'action'	 					#message type
 								)
 
 	def on_pubmsg(self, connection, event):
 		text = event.arguments()[0]
-		
-		# Debugging output
-		print "SOURCE: " + event.source();
-		print "TARGET: " + event.target();
-		for argument in event.arguments():
-			print argument + ", "	
 
 		# If you talk to the bot, this is how he responds.
-		if nick_reg.search(text):
-			if disconnect_reg.search(text):
-				connection.privmsg(channel, "Aww.")
-				connection.action(channel, "... TRANSFORM AND ROLL OUT!")
-				self.disconnect()
+		if self.nick_reg.search(text):
+			if self.disconnect_reg.search(text):
+				connection.privmsg(self.channel, "Aww.")
+				connection.action(self.channel, "... TRANSFORM AND ROLL OUT!")
+				sys.exit( 0 ) 
 				
 			if text.split(" ")[1] and text.split(" ")[1] == "ping":
 				self.on_ping(connection, event)
 				return
-				
-			if text.split(" ")[1] and text.split(" ")[1] == "top5":
-				posts = self.feeder.top5()
-				for post in posts:
-					connection.privmsg(channel, post )
-					self.db.insert_now( channel.strip("#"), 			#channel
-										"AutoBoose", 					#name
-										post, 							#message
-										'pubmsg'	 					#message type
-										)
-				return
-			
-			response = self.commandline.run_commands( text )
-			
-			connection.privmsg(channel, response )
-			self.db.insert_now( channel.strip("#"), 			#channel
-								"AutoBoose", 					#name
-								response, 						#message
-								'pubmsg'	 					#message type
-								)
 
 def main():
 
-	c = Logger(channel)
-	try:
-		c.connect(server, port, nick)
-	except irclib.ServerConnectionError, x:
-		print x
-		sys.exit(1)
-	c.start()
-
+	mysql_settings = config.config("mysql_config.txt")
+	irc_settings = config.config("irc_config.txt")
+	
+	c = Logger(
+				irc_settings["server"], 
+				int(irc_settings["port"]), 
+				irc_settings["channel"], 
+				irc_settings["nick"],
+				mysql_settings["server"],
+				int(mysql_settings["port"]),
+				mysql_settings["database"],
+				mysql_settings["user"],
+				mysql_settings["password"]) 
+	while True:			
+		try:
+			c.start()
+		except Exception, x:
+			print x
+	
 if __name__ == "__main__":
 	main() 

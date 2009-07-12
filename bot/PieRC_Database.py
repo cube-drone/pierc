@@ -12,7 +12,6 @@ class PieRC_Database:
 								passwd = password,
 								db = database )
 			self.cursor = self.conn.cursor()
-            
 		except MySQLdb.Error, e:
 			print "Error %d: %s" % (e.args[0], e.args[1])
 			exit(1)
@@ -34,30 +33,10 @@ class PieRC_Database:
 				hidden  CHAR(1)
 			) engine = InnoDB;
 			
-			CREATE TABLE IF NOT EXISTS feeds
-			(
-<<<<<<< .mine
-				id		INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, 	
-				url		TEXT,
-=======
-				id	INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY, 	
-				url	TEXT,
->>>>>>> .r43
-				name	VARCHAR(30)
-			) engine = InnoDB;
-			
-			CREATE TABLE IF NOT EXISTS redditusers
-			(
-<<<<<<< .mine
-				id		INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-=======
-				id	INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
->>>>>>> .r43
-				reddituser	VARCHAR(30)
-			)engine = InnoDB;
 			""")
 
 	def insert_line(self, channel, name, time, message, msgtype, hidden = "F"):
+
 		"""
 		Sample line: "sfucsss, danly, 12:33-09/11/2009, I love hats, normal, 0"
 		"""
@@ -69,7 +48,6 @@ class PieRC_Database:
 		"\""+self.conn.escape_string(msgtype)+"\"," + \
 		"\""+self.conn.escape_string(hidden)+"\")"
 		
-		print query
 		self.cursor.execute(query)
 
 	def insert_now(self, channel, name, message, msgtype, hidden = "F" ):
@@ -77,97 +55,6 @@ class PieRC_Database:
 		
 	def commit(self):
 		self.conn.commit()
-		
-	def lastseen(self, username):
-		""" When was the last time username was seen? """
-		query = """
-			SELECT time 
-				FROM main 
-				WHERE name = %s ORDER BY id DESC LIMIT 1;
-				"""
-		self.cursor.execute( query, (username, ) )
-		result = self.cursor.fetchone()
-		if result:
-			return result[0]
-		else:
-			return False
-	
-	def feeds(self):
-		""" List the feeds that AutoBoose watches """
-		query = """
-			SELECT id, name
-				FROM feeds;
-				"""
-		self.cursor.execute( query )
-		result = self.cursor.fetchall()
-		if result:
-			return result
-		else:
-			return False
-			
-	def feed(self, id):
-		""" Get the URL of a feed that AutoBoose watches """
-		query = """
-			SELECT name, url
-				FROM feeds WHERE id = %s;
-				"""
-		self.cursor.execute( query, (id, ) )
-		result = self.cursor.fetchone()
-		if result:
-			return result
-		else:
-			return False
-			
-	def addfeed(self, name, url):
-		""" Add a feed """
-		query = """
-			INSERT INTO feeds (name, url) VALUES (%s, %s);
-				"""
-		
-		print query;
-		self.cursor.execute( query, (name, url) )
-		return True
-	
-	def deletefeed(self, id):
-		""" Add a feed """
-		query = """
-			DELETE FROM feeds WHERE id = %s;
-				"""
-		print query;
-		self.cursor.execute( query, (id, ) )
-		return True
-		
-	def reddits(self):
-		""" List the reddit users that AutoBoose watches """
-		query = """
-			SELECT id, reddituser
-				FROM redditusers;
-				"""
-		self.cursor.execute( query )
-		result = self.cursor.fetchall()
-		if result:
-			return result
-		else:
-			return False
-			
-	def addreddit(self, name):
-		""" Add a reddit user """
-		query = """
-			INSERT INTO redditusers (reddituser) VALUES (%s);
-				"""
-		print query;
-		self.cursor.execute( query, (name, ) )
-		return True
-	
-	def deletereddit(self, id):
-		""" Add a feed """
-		query = """
-			DELETE FROM redditusers WHERE id = %s;
-				"""
-		print query;
-		self.cursor.execute( query, (id, ) )
-		return True
-		
 
 if __name__ == "__main__":
 	mysql_config = config.config("mysql_config.txt")
@@ -176,7 +63,6 @@ if __name__ == "__main__":
 						mysql_config["database"], 
 						mysql_config["user"],
 						mysql_config["password"])
-	print db.create_table() 
         
         
         
