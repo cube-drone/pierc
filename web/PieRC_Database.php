@@ -154,7 +154,7 @@ class pie_db extends db_class
 		$searcharray = split("[\s(%20)(%25)(%2520)|]", $search);
 		foreach($searcharray as $searchterm )
 		{
-			$searchquery .= "AND message LIKE '%".mysql_real_escape_string($searchterm)."%' ";
+			$searchquery .= "AND (message LIKE '%".mysql_real_escape_string($searchterm)."%' OR name LIKE '%".mysql_real_escape_string($searchterm)."%' ) ";
 		}
 		
 		$n = (int)$n;
@@ -216,26 +216,6 @@ class pie_db extends db_class
 				FROM main 
 			WHERE name = '".$user."' ORDER BY id DESC LIMIT ".$n.";";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
-		
-		return $this->hashinate($results);
-	}
-	
-	public function get_feeds()
-	{
-		$query = "SELECT * FROM feeds;";
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
-		
-		return $this->hashinate($results);
-	}
-	
-	public function get_redditors()
-	{
-		$query = "SELECT * FROM redditusers;";
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
 		if( mysql_num_rows($results) == 0 ) { return false; }

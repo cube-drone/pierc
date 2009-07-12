@@ -12,7 +12,7 @@ var hash = "#";			// The most recent hash value in the URL ("#search-poop")
 
 // On Load
 $(function() {
-	
+	window.location.hash = "#home";
 	
 	// check for new content every N seconds
     setInterval("refresh()", irc_refresh_in_seconds * 1000);
@@ -53,6 +53,11 @@ function hashnav()
 	{
 		var id = hash.substring( 4, hash.length );
 		context(id);
+		return true;
+	}
+	else if (hash.substring(1, 5) == "home") 
+	{
+		top();
 		return true;
 	}
 	else if (hash.substring(1, 8) == "loading") 
@@ -97,6 +102,8 @@ function top()
         									});
         	scroll_to_bottom();
         	$('#loading').hide('slow');
+        	window.location.hash = "home";
+   			hash = window.location.hash;
         });
 }
 
@@ -290,13 +297,13 @@ function irc_render( item )
 	}
 	
 	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
-	construct_string += "<td class='name'><a href='#tag-"+html_escape(item.name)+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
+	construct_string += "<td class='name'><a href='#search-"+html_escape(item.name)+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
 	
 	if 		(item.type == "pubmsg") { construct_string += ":&nbsp;";}
 	else if (item.type == "join") { construct_string += "has joined #" + html_escape(item.channel); }
 	else if (item.type == "part") { construct_string += "has left #" + html_escape(item.channel) + " -- "; }
 	else if (item.type == "topic") { construct_string += "has changed the topic: <br/>"; } 
-	else if (item.type == "nick") { construct_string += "has changed his nick!";}
+	else if (item.type == "nick") { construct_string += "is now known as ";}
 	else if (item.type == "action") { } 
 
 	construct_string += link_replace(html_escape(item.message)) + "</td>";
@@ -365,16 +372,16 @@ function human_date( date )
 	var td = new Date();
 	if( date.getDate() == td.getDate() && 
 		date.getMonth() == td.getMonth() &&
-		date.getYear() == td.getYear() ) { return "Today"; }
+		date.getYear() == td.getYear() ) { return "Today - "  + date.toLocaleTimeString(); }
 	
 	var yesterday = new Date();
 	yesterday.setDate( td.getDate() - 1 );
 		
 	if( date.getDate() == yesterday.getDate() && 
 		date.getMonth() == yesterday.getMonth() &&
-		date.getYear() == yesterday.getYear() ) { return "Yesterday"; }
+		date.getYear() == yesterday.getYear() ) { return "Yesterday - "  + date.toLocaleTimeString(); }
 	
-	return date.toLocaleDateString();
+	return date.toDateString() + " - " + date.toLocaleTimeString();
 }
 
 // Shouldn't this be part of javascript somewhere? 

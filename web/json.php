@@ -1,7 +1,7 @@
 <?php 
 // All of the JSON calls are handled here. 
 
-include("lib/PieRC_Database.php");
+include("PieRC_Database.php");
 include("config.php");
 
 $pdb = config::get_db();
@@ -51,20 +51,6 @@ if ( $_GET['type'] == 'user' )
 	return;
 }
 
-# FEEDS - AutoBoose's feed reader
-if ($_GET['type'] == 'feeds')
-{
-	$lines =  $pdb->get_feeds();
-	print json_encode( $lines );
-	return;
-}
-
-# REDDITORS - Redditors on #sfucsss
-if ($_GET['type'] == 'reddit')
-{	
-	print json_encode( $pdb->get_redditors() );
-	return;
-}
 
 # CONTEXT - results centered about an ID value
 if( $_GET['type'] == 'context' )
