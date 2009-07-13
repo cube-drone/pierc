@@ -1,4 +1,4 @@
 server: irc.freenode.net
 port: 6667
-channel: #sfucsss
-nick: aBoose
+channel: #logbot_test
+nick: lumberjack

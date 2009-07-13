@@ -1,5 +1,5 @@
-server: mysql.lassam.net
+server: mysql.sample.net
 port: 3306
-database: pierc
-user: pierc
-password: this_is_not_the_correct_password
+database: lumberjack
+user: lumberjack_user
+password: lumberjack_password
