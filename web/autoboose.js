@@ -12,7 +12,6 @@ var hash = "#";			// The most recent hash value in the URL ("#search-poop")
 
 // On Load
 $(function() {
-	window.location.hash = "#home";
 	
 	// check for new content every N seconds
     setInterval("refresh()", irc_refresh_in_seconds * 1000);
@@ -77,8 +76,7 @@ function hashnav_check()
 	}
 	else
 	{
-		hashnav();
-		return true;
+		return hashnav();
 	}
 }
 

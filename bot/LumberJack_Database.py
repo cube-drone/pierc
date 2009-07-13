@@ -2,7 +2,7 @@ import MySQLdb
 import config
 import datetime
 
-class PieRC_Database:
+class LumberJack_Database:
 	
 	def __init__(self, server, port, database, user, password):
 		try:
@@ -58,11 +58,12 @@ class PieRC_Database:
 
 if __name__ == "__main__":
 	mysql_config = config.config("mysql_config.txt")
-	db = PieRC_Database( mysql_config["server"],
+	db = LumberJackRC_Database( mysql_config["server"],
 						int(mysql_config["port"]),
 						mysql_config["database"], 
 						mysql_config["user"],
 						mysql_config["password"])
+	db.create_table()
         
         
         

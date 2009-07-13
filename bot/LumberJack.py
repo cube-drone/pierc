@@ -10,7 +10,7 @@ import re
 import time
 
 #mine
-import PieRC_Database
+import LumberJack_Database
 import config
 
 
@@ -33,7 +33,7 @@ class Logger(irclib.SimpleIRCClient):
 		self.echo = False
 		
 		# On creating the Bot, instantiate the database 
-		self.db = PieRC_Database.PieRC_Database( mysql_server,
+		self.db = LumberJack_Database.LumberJack_Database( mysql_server,
 												 mysql_port,
 												 mysql_database, 
 											   	 mysql_user,

@@ -39,5 +39,9 @@
 	
 </div>
 
+<div id="footer">
+	Powered by <a href="http://curtis.lassam.net/software/lumberjack/">LumberJack</a>
+</div>
+
 </body>
 </html>

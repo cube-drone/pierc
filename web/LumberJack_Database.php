@@ -19,7 +19,7 @@ class db_class
 	
 }
 
-class pie_db extends db_class
+class lumberjack_db extends db_class
 {
 	protected function hashinate( $result )
 	{
