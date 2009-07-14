@@ -315,7 +315,23 @@ function irc_render( item )
 // Make links clickable, and images images
 function link_replace( string )
 {
-	return string.replace( /(http:&#x2F;&#x2F;\S*)/g , "<a href='$1'>$1</a>");
+	links = string.match( /(http:&#x2F;&#x2F;\S*)/g  );
+	if (links)
+	{
+		for( var i = 0; i < links.length; i++ )
+		{
+			console.log( links[i] );
+			
+			var replacement = links[i]
+			if (replacement.length > 100)
+			{
+				replacement = links[i].substring(0,100) + "...";
+			}
+			
+			string = string.replace( links[i], "<a href='"+links[i]+"'>"+replacement+"</a>");
+		}
+	}
+	return string;
 }
 
 // Show the 'loading' widget. 
@@ -368,18 +384,22 @@ function datetimeify( mysql_date_string )
 function human_date( date )
 {
 	var td = new Date();
+	var dt = date.toDateString()
 	if( date.getDate() == td.getDate() && 
 		date.getMonth() == td.getMonth() &&
-		date.getYear() == td.getYear() ) { return "Today - "  + date.toLocaleTimeString(); }
+		date.getYear() == td.getYear() ) { dt = "Today"; }
 	
 	var yesterday = new Date();
 	yesterday.setDate( td.getDate() - 1 );
 		
 	if( date.getDate() == yesterday.getDate() && 
 		date.getMonth() == yesterday.getMonth() &&
-		date.getYear() == yesterday.getYear() ) { return "Yesterday - "  + date.toLocaleTimeString(); }
+		date.getYear() == yesterday.getYear() ) { dt = "Yesterday";}
 	
-	return date.toDateString() + " - " + date.toLocaleTimeString();
+	var minutes = date.getMinutes();
+	if( minutes < 10 ){ minutes = "0" + minutes; } 
+	
+	return dt + " - " + date.getHours() + ":" + minutes;
 }
 
 // Shouldn't this be part of javascript somewhere? 
