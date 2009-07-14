@@ -13,7 +13,7 @@ class config
 	
 	static function get_db()
 	{
-		return new pie_db( config::$dbms_host, config::$dbms_port, config::$dbms_database, config::$dbms_user, config::$dbms_pass );
+		return new lumberjack_db( config::$dbms_host, config::$dbms_port, config::$dbms_database, config::$dbms_user, config::$dbms_pass );
 	}
 }
 
