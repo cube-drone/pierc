@@ -2,13 +2,13 @@
 
 class config
 {
-	static $dbms_host = 		"mysql.lassam.net";
+	static $dbms_host = 		"mysql.sample.net";
 	static $dbms_port = 		"";
-	static $dbms_database = 	"pierc";
-	static $dbms_user = 		"pierc";
-	static $dbms_pass = 		"put_db_pass_in_here";
+	static $dbms_database = 	"lumberjack";
+	static $dbms_user = 		"lumberjack_user";
+	static $dbms_pass = 		"lumberjack_pass";
 	
-	static $default_channel =	"sfucsss";
+	static $default_channel =	"logbot_test";
 	static $default_number_of_lines = 50;
 	
 	static function get_db()
