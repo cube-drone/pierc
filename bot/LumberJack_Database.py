@@ -43,15 +43,12 @@ class LumberJack_Database:
 		query =	"INSERT INTO main (channel, name, time, message, type, hidden) VALUES" + \
 		"(\""+self.conn.escape_string(channel)+ "\"," + \
 		"\""+self.conn.escape_string(name)+"\"," + \
-		""+time+"," + \
+		"\""+time+"\"," + \
 		"\""+self.conn.escape_string(message)+"\"," + \
 		"\""+self.conn.escape_string(msgtype)+"\"," + \
 		"\""+self.conn.escape_string(hidden)+"\")"
-		
-		self.cursor.execute(query)
 
-	def insert_now(self, channel, name, message, msgtype, hidden = "F" ):
-		self.insert_line(channel, name, "NOW()", message, msgtype, hidden)
+		self.cursor.execute(query)
 		
 	def commit(self):
 		self.conn.commit()
