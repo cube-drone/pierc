@@ -55,7 +55,7 @@ class LumberJack_Database:
 
 if __name__ == "__main__":
 	mysql_config = config.config("mysql_config.txt")
-	db = LumberJackRC_Database( mysql_config["server"],
+	db = LumberJack_Database( mysql_config["server"],
 						int(mysql_config["port"]),
 						mysql_config["database"], 
 						mysql_config["user"],
