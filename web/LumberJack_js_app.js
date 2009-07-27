@@ -319,9 +319,7 @@ function link_replace( string )
 	if (links)
 	{
 		for( var i = 0; i < links.length; i++ )
-		{
-			console.log( links[i] );
-			
+		{	
 			var replacement = links[i]
 			if (replacement.length > 100)
 			{
