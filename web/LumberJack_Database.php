@@ -151,7 +151,7 @@ class lumberjack_db extends db_class
 		$channel = mysql_real_escape_string($channel);
 		
 		$searchquery = " WHERE channel = '$channel' ";
-		$searcharray = split("[\s(%20)(%25)(%2520)|]", $search);
+		$searcharray = split("[ (%20)(%25)(%2520)|]", $search);
 		foreach($searcharray as $searchterm )
 		{
 			$searchquery .= "AND (message LIKE '%".mysql_real_escape_string($searchterm)."%' OR name LIKE '%".mysql_real_escape_string($searchterm)."%' ) ";
@@ -167,7 +167,8 @@ class lumberjack_db extends db_class
 		if (!$results){ print mysql_error(); return false; }
 		if( mysql_num_rows($results) == 0 ) { return false; }
 		
-		return array_reverse($this->hashinate($results));
+		$results = array_reverse($this->hashinate($results));
+		return $results;
 	}
 	
 	public function get_tag( $channel, $tag, $n )
