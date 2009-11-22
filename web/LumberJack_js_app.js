@@ -295,7 +295,7 @@ function irc_render( item )
 	}
 	
 	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
-	construct_string += "<td class='name'><a href='#search-"+html_escape(item.name)+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
+	construct_string += "<td class='name'><a href='#id-"+item.id+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
 	
 	if 		(item.type == "pubmsg") { construct_string += ":&nbsp;";}
 	else if (item.type == "join") { construct_string += "has joined #" + html_escape(item.channel); }
@@ -308,7 +308,6 @@ function irc_render( item )
 	var message_date = datetimeify(item.time);
 	var pretty_date = human_date(message_date);
 	construct_string += "<td class='date'>" + pretty_date + "</td>";
-	construct_string += "<td class='context'><a onclick='loading' href='#id-"+item.id+"'>Context</a></td> </tr>";
 	return $(construct_string);
 }
 
