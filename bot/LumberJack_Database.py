@@ -5,20 +5,20 @@ import datetime
 class LumberJack_Database:
 	
 	def __init__(self, server, port, database, user, password):
-		try:
-			self.conn = MySQLdb.connect ( host = server,
-								port = port, 
-								user = user,
-								passwd = password,
-								db = database )
-			self.cursor = self.conn.cursor()
-		except MySQLdb.Error, e:
-			print "Error %d: %s" % (e.args[0], e.args[1])
-			exit(1)
+		self.conn = MySQLdb.connect ( host = server,
+						port = port, 
+						user = user,
+						passwd = password,
+						db = database )
+		self.cursor = self.conn.cursor()
+			
 
 	def __del__(self):
-		self.conn.close()
-        
+		try:
+			self.conn.close()
+		except: 
+			return        
+
 	def create_table(self):
 		self.cursor.execute(
 		"""
