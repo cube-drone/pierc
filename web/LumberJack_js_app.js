@@ -132,7 +132,7 @@ function search_for( searchvalue )
 {
 	
 	window.location.hash = "search-"+searchvalue;
-    hash = window.location.hash;
+	hash = window.location.hash;
     	
 	//Before
 	refresh_on = false;
@@ -253,7 +253,7 @@ function important( )
 function tag( tagname ) 
 {
 	window.location.hash = "tag-"+tagname;
-    hash = window.location.hash;
+	hash = window.location.hash;
 
 	clear();
 	refresh_on = false;
@@ -297,7 +297,7 @@ function irc_render( item )
 	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
 	construct_string += "<td class='name'><a href='#id-"+item.id+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
 	
-	if 		(item.type == "pubmsg") { construct_string += ":&nbsp;";}
+	if (item.type == "pubmsg") { construct_string += ":&nbsp;";}
 	else if (item.type == "join") { construct_string += "has joined #" + html_escape(item.channel); }
 	else if (item.type == "part") { construct_string += "has left #" + html_escape(item.channel) + " -- "; }
 	else if (item.type == "topic") { construct_string += "has changed the topic: <br/>"; } 
