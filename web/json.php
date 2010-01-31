@@ -1,6 +1,8 @@
 <?php 
 // All of the JSON calls are handled here. 
 
+error_reporting( E_ERROR | E_WARNING | E_PARSE ); 
+
 include("LumberJack_Database.php");
 include("config.php");
 
