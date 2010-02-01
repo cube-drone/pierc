@@ -7,7 +7,7 @@ class db_class
 	
 	public function __construct( $server, $port, $database, $user, $password, $timezone)
 	{
-		if ($port) { $port = ":".$port ; print $port; }
+		if ($port) { $port = ":".$port; }
 		$this->_conn = mysql_connect( $server.$port, $user, $password );
 		if (!$this->_conn){ die ("Could not connect: " + mysql_error() ); }
 		mysql_select_db( $database, $this->_conn );
