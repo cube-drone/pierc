@@ -1,15 +1,17 @@
 <?php
 
+
 class db_class
 {
 	protected $_conn;
 	
-	public function __construct( $server, $port, $database, $user, $password)
+	public function __construct( $server, $port, $database, $user, $password, $timezone)
 	{
 		if ($port) { $port = ":".$port ; print $port; }
 		$this->_conn = mysql_connect( $server.$port, $user, $password );
 		if (!$this->_conn){ die ("Could not connect: " + mysql_error() ); }
 		mysql_select_db( $database, $this->_conn );
+		$this->timezone = $timezone;
 	}
 	
 	public function __destruct( )
@@ -27,6 +29,13 @@ class lumberjack_db extends db_class
 		$counter = 0;
 		while( $row = mysql_fetch_assoc($result) )
 		{
+			if( isset( $row['time'] ) )
+			{
+				date_default_timezone_set('UTC');
+				$dt = date_create( $row['time']);
+				$dt->setTimezone( new DateTimeZone($this->timezone));
+				$row['time'] = $dt->format("Y-m-d H:i:s"); 
+			}
 			$lines[$counter] = $row;
 			$counter++;
 		}

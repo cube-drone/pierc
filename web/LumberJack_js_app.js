@@ -393,10 +393,15 @@ function human_date( date )
 		date.getMonth() == yesterday.getMonth() &&
 		date.getYear() == yesterday.getYear() ) { dt = "Yesterday";}
 	
+	var ampm = "AM";
+	var hours = date.getHours();
+	if(hours > 12){ hours = hours - 12; ampm = "PM"; }
+		
 	var minutes = date.getMinutes();
 	if( minutes < 10 ){ minutes = "0" + minutes; } 
-	
-	return dt + " - " + date.getHours() + ":" + minutes;
+
+
+	return dt + " - " + hours + ":" + minutes + " " + ampm;
 }
 
 // Shouldn't this be part of javascript somewhere? 
