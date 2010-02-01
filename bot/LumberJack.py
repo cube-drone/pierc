@@ -71,7 +71,7 @@ class Logger(irclib.SimpleIRCClient):
 							"name": source,
 							"message": text,
 							"type": e.eventtype(),
-							"time": str(datetime.datetime.now()) } 
+							"time": str(datetime.datetime.utcnow()) } 
 							
 			if e.eventtype() == "nick":
 				message_dict["message"] = e.target()
