@@ -91,7 +91,7 @@ class Logger(irclib.SimpleIRCClient):
 			connection.join(self.target)
 
 	def on_disconnect(self, connection, event):
-		self.on_ping(self, connection, event)
+		self.on_ping(connection, event)
 		
 	def on_ping(self, connection, event):
 		try:
