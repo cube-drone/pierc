@@ -38,9 +38,15 @@ else
 if ( isset( $_GET['search'] ) )
 {
 	$search = $_GET['search'];
+
+	$offset = 0;
+	if ( isset( $_GET['offset'] ) && is_numeric( $offset ) )
+	{
+		$offset = $_GET['offset'];
+	}
 	
 	// Search channel for $search
-	$lines = $pdb->get_search_results( $channel, $search, $n );
+	$lines = $pdb->get_search_results( $channel, $search, $n, $offset );
 	print json_encode( $lines );
 	return;
 }	

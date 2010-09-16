@@ -23,9 +23,12 @@
 	<a id="home" href="#">Home</a> |
 	<a id="events" href="#">Events</a> |
 	<a id="important" href="#">Important</a>
+	<span id="searchoptions"> | 
+	<a id="load_more" href="#">Load More Search Results</a> 
+	</span>
 	<span id="options"> |
-	<a id="prev" href="#"><<</a> | 
-	<a id="next" href="#">>></a> </span>
+	<a id="prev" href="#">&lt;&lt;</a> | 
+	<a id="next" href="#">&gt;&gt;</a> </span>
 	<img id="loading" src="images/ajax-loader.gif"/>
 	</div>
 

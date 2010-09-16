@@ -154,10 +154,12 @@ class lumberjack_db extends db_class
 		return array_reverse($this->hashinate($results));
 	}
 	
-	public function get_search_results( $channel, $search, $n )
+	public function get_search_results( $channel, $search, $n, $offset=0 )
 	{
 		$search = mysql_real_escape_string($search);
 		$channel = mysql_real_escape_string($channel);
+		$n = (int) $n;
+		$offset = (int) $offset;
 		
 		$searchquery = " WHERE channel = '$channel' ";
 		$searcharray = split("[ (%20)(%25)(%2520)|]", $search);
@@ -170,7 +172,7 @@ class lumberjack_db extends db_class
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden 
 				FROM main 
-			$searchquery ORDER BY id DESC LIMIT $n;";
+			$searchquery ORDER BY id DESC LIMIT $n OFFSET $offset;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }

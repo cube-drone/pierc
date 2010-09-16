@@ -10,6 +10,10 @@ var first_id = 0;		// The ID of the comment at the very top of the page
 var refresh_on = true;	// Whether or not the 'refresh' action is currently operating
 var hash = "#";			// The most recent hash value in the URL ("#search-poop")
 
+var current_offset = 50; // The current search offset;
+var most_recent_search = ""; //The last thing searched for. 
+
+
 // On Load
 $(function() {
 	
@@ -17,17 +21,18 @@ $(function() {
     setInterval("refresh()", irc_refresh_in_seconds * 1000);
     setInterval("hashnav_check()", page_hash_check_in_seconds * 1000);
     
-    if( ! hashnav() ) { top(); }
+    if( ! hashnav() ) { home(); }
 	
 	//Toolbar setup
+	$("#load_more").click( load_more_search_results );
 	$("#search").submit( search );
-	$("#home").click( top );
+	$("#home").click( home );
 	$("#prev").click( page_up );
 	$("#next").click( page_down );
 	$("#events").click( events );
 	$("#important").click( important );
 	
-	
+	$("#searchoptions").hide();	
 });
 
 // Navigate around the site based on the site hash.
@@ -56,7 +61,7 @@ function hashnav()
 	}
 	else if (hash.substring(1, 5) == "home") 
 	{
-		top();
+		home();
 		return true;
 	}
 	else if (hash.substring(1, 8) == "loading") 
@@ -83,14 +88,15 @@ function hashnav_check()
 
 // Populate the page with the last 50 things said
 // This is the default 'home' activity for the page.
-function top()
+function home()
 {
 	clear();
 	refresh_on = true;
 	$('#irc').removeClass("searchresult");
 	$("#options").show();
+	$("#searchoptions").hide();	
 	// Ajax call to populate table
-	$('#loading').show('fast');
+	loading()
 	$.getJSON("json.php",
         function(data){
         	first_id = data[0].id;
@@ -99,9 +105,9 @@ function top()
         										last_id = item.id; 
         									});
         	scroll_to_bottom();
-        	$('#loading').hide('slow');
-        	window.location.hash = "home";
-   			hash = window.location.hash;
+        	done_loading();
+		window.location.hash = "home";
+   		hash = window.location.hash;
         });
 }
 
@@ -109,7 +115,7 @@ function top()
 function refresh()
 {
 	if( !refresh_on ) { return; }
-	$("#loading").show("fast");
+	loading();
 	$.getJSON("json.php", { 'type':'update', 'id': last_id },
         function(data){
         	$(data).each( function(i, item) { 
@@ -123,27 +129,30 @@ function refresh()
         										}
         									
         									});
-        	$('#loading').hide('slow');
+		done_loading();
         });
 }
 
 // Perform a search for the given search value. Populate the page with the results.
 function search_for( searchvalue )
 {
-	
+	current_offset = 50;
+	most_recent_search = searchvalue;	
 	window.location.hash = "search-"+searchvalue;
 	hash = window.location.hash;
     	
 	//Before
 	refresh_on = false;
 	$("#options").hide();
+	$("#searchoptions").show();	
 	
 	clear();
-	$('#loading').show('fast');
+	loading();
 	
 	// Ajax call to get search results
 	$.getJSON("json.php", {'search':searchvalue}, 
         function(data){
+		if( data.length < 50 ) { $("#searchoptions").hide(); }	
         	$(data).each( function(i, item) { try
         										{
         											$(irc_render(item)).appendTo("#irc");
@@ -154,8 +163,7 @@ function search_for( searchvalue )
         										}
         									} );
         $("#irc").addClass("searchresult");
-        $('#loading').hide('slow');
-        
+        done_loading(); 
         scroll_to_bottom();
         
         });
@@ -176,9 +184,10 @@ function context(id)
 	clear();
 	refresh_on = false;
 	$("#options").show();
+	$("#searchoptions").hide();	
 	
 	$('#irc').removeClass("searchresult");
-	$('#loading').show('fast');
+	loading();
 	
 	// Ajax call to get 'context' (find the comment at id 'id' and 'n' spaces around it). 
 	$.getJSON("json.php", {'type':'context', 'id':id },
@@ -192,19 +201,42 @@ function context(id)
         	// After
         	scroll_to_id( id );
         	$('#irc-'+id).animate({fontSize: "150%"}, 2500);
-        	$('#loading').hide('slow');
+        	done_loading();
         	window.location.hash = "id-"+id;
         	hash = window.location.hash;
         });
     
 }
 
+// Add n more search results
+function load_more_search_results()
+{
+	if( current_offset < 50 ){ current_offset = 50 };
+
+	// Ajax call
+	loading();
+	$.getJSON("json.php", {'type':'search', 'n':50, 'offset':current_offset, 'search':most_recent_search },
+	function(data){ 
+        	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").prependTo("#irc");
+		var id = 0;
+		if( data.length < 50 ) { $("#searchoptions").hide(); }	
+		data.reverse();
+		$(data).each( function( i, item) {
+			$(irc_render(item)).prependTo("#irc");
+			id = item.id;
+		});
+		scroll_to_id( id );
+		done_loading();
+		current_offset += 50;
+	});	
+	return false;
+}
 
 // Add a page of IRC chat _before_ the current page of IRC chat
 function page_up()
 {	
 	// Ajax call to populate table
-	$('#loading').show('fast');
+	loading();
 	$.getJSON("json.php", {'type':'context', 'id':first_id, 'n':20, 'context':'before' },
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").prependTo("#irc");
@@ -213,7 +245,7 @@ function page_up()
         										first_id = item.id; 
         									});
         	scroll_to_id( first_id );
-        	$('#loading').hide('slow');
+		done_loading();
         });
  	return false;   
 }
@@ -221,7 +253,7 @@ function page_up()
 // Add a page of IRC chat _after_ the current page of IRC chat
 function page_down()
 {	
-	$('#loading').show('fast');
+	loading();
 	
 	$.getJSON("json.php", {'type':'context', 'id':last_id, 'n':20, 'context':'after' },
         function(data){
@@ -232,7 +264,7 @@ function page_down()
         									});
         								
         	scroll_to_bottom();
-        	$('#loading').hide('slow');
+		done_loading();
         });
     return false;
 }
@@ -258,17 +290,17 @@ function tag( tagname )
 	clear();
 	refresh_on = false;
 	$("#options").hide();
+	$("#searchoptions").hide();	
 	$('#irc').removeClass("searchresult");
 	
-	$('#loading').show('fast');
-	
+	loading();	
 	$.getJSON("json.php", {'type':'tag', 'tag':tagname, 'n':15 },
         function(data){
         	$(data).each( function(i, item) { 	
         										$(irc_render(item)).appendTo("#irc");
         									});
         									
-        	$('#loading').hide('slow');
+		done_loading();
         	scroll_to_bottom();
         });
     return false;
@@ -335,6 +367,13 @@ function link_replace( string )
 function loading()
 {
 	$("#loading").show('fast');
+	document.body.style.cursor = 'wait';
+}
+
+function done_loading()
+{
+	$('#loading').hide('slow');
+	document.body.style.cursor = 'default';
 }
 
 // Clears the IRC area.
