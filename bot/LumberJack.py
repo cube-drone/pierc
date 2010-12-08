@@ -21,6 +21,7 @@ class Logger(irclib.SimpleIRCClient):
 	
 	def __init__(self, server, port, channel, nick, 
 				mysql_server, mysql_port, mysql_database, mysql_user, mysql_password):
+
 	
 		irclib.SimpleIRCClient.__init__(self)
 		
@@ -46,15 +47,27 @@ class Logger(irclib.SimpleIRCClient):
 		
 		#Disconnect Countdown
 		self.disconnect_countdown = 5
-		
+	
+		self.last_ping = 0
+		self.ircobj.delayed_commands.append( (time.time()+5, self._no_ping, [] ) )
+ 	
 		self.connect(self.server, self.port, self.nick)
-		
+	
+	def _no_ping(self):
+		if self.last_ping >= 1200:
+			raise irclib.ServerNotConnectedError
+		else:
+			self.last_ping += 10
+		self.ircobj.delayed_commands.append( (time.time()+10, self._no_ping, [] ) )
+
+
 	def _dispatcher(self, c, e):
 	# This determines how a new event is handled. 
 		if(e.eventtype() == "topic" or 
 		   e.eventtype() == "part" or
 		   e.eventtype() == "join" or
 		   e.eventtype() == "action" or
+		   e.eventtype() == "quit" or
 		   e.eventtype() == "nick" or
 		   e.eventtype() == "pubmsg"):
 			try: 
@@ -92,8 +105,11 @@ class Logger(irclib.SimpleIRCClient):
 
 	def on_disconnect(self, connection, event):
 		self.on_ping(connection, event)
-		
+		connection.disconnect()
+		raise irclib.ServerNotConnectedError
+
 	def on_ping(self, connection, event):
+		self.last_ping = 0
 		try:
 			db = LumberJack_Database.LumberJack_Database( self.mysql_server,
 												 			self.mysql_port,
@@ -135,7 +151,6 @@ class Logger(irclib.SimpleIRCClient):
 				return
 
 def main():
-
 	mysql_settings = config.config("mysql_config.txt")
 	irc_settings = config.config("irc_config.txt")
 	
@@ -148,12 +163,16 @@ def main():
 				int(mysql_settings["port"]),
 				mysql_settings["database"],
 				mysql_settings["user"],
-				mysql_settings["password"]) 
-	while True:			
-		try:
-			c.start()
-		except Exception, x:
-			print x
+				mysql_settings["password"] ) 
+	c.start()
 	
 if __name__ == "__main__":
-	main() 
+	irc_settings = config.config("irc_config.txt")
+	reconnect_interval = irc_settings["reconnect"]
+	while True:
+		try:
+			main()
+		except irclib.ServerNotConnectedError:
+			print "Server Not Connected! Let's try again!"             
+        	time.sleep(float(reconnect_interval))
+            
