@@ -431,16 +431,23 @@ function human_date( date )
 	if( date.getDate() == yesterday.getDate() && 
 		date.getMonth() == yesterday.getMonth() &&
 		date.getYear() == yesterday.getYear() ) { dt = "Yesterday";}
-	
-	var ampm = "AM";
-	var hours = date.getHours();
-	if(hours > 12){ hours = hours - 12; ampm = "PM"; }
+
+	if( hours == 0 && minutes == 0 ) { return dt + " - Midnight"; }
+	else if( hours == 12 && minutes == 0 ){ return dt + " - Noon"; } 
+	else
+	{
+		var ampm = "AM";
+		var hours = date.getHours();
+		if(hours > 11){ hours = hours - 12; ampm = "PM"; }
 		
-	var minutes = date.getMinutes();
-	if( minutes < 10 ){ minutes = "0" + minutes; } 
+		var minutes = date.getMinutes();
+		if( minutes < 10 ){ minutes = "0" + minutes; } 
 
+		// I find it strange, but in a 12-hour clock, '12' acts as 0. 
+		if( hours == 0 ) { hours = 12; }
 
-	return dt + " - " + hours + ":" + minutes + " " + ampm;
+		return dt + " - " + hours + ":" + minutes + " " + ampm;
+	}
 }
 
 // Shouldn't this be part of javascript somewhere? 
