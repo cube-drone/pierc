@@ -217,7 +217,7 @@ function load_more_search_results()
 	loading();
 	$.getJSON("json.php", {'type':'search', 'n':50, 'offset':current_offset, 'search':most_recent_search },
 	function(data){ 
-        	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").prependTo("#irc");
+        	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").prependTo("#irc");
 		var id = 0;
 		if( data.length < 50 ) { $("#searchoptions").hide(); }	
 		data.reverse();
@@ -239,7 +239,7 @@ function page_up()
 	loading();
 	$.getJSON("json.php", {'type':'context', 'id':first_id, 'n':20, 'context':'before' },
         function(data){
-        	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").prependTo("#irc");
+        	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").prependTo("#irc");
         	$(data).each( function(i, item) { 	
         										$(irc_render(item)).prependTo("#irc"); 
         										first_id = item.id; 
@@ -257,7 +257,7 @@ function page_down()
 	
 	$.getJSON("json.php", {'type':'context', 'id':last_id, 'n':20, 'context':'after' },
         function(data){
-        	$("<tr class='pagebreak'><td></td> <td>-------------------------------</td> <td></td></tr>").appendTo("#irc");
+        	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").appendTo("#irc");
         	$(data).each( function(i, item) { 	
         										$(irc_render(item)).appendTo("#irc"); 
         										last_id = item.id; 
