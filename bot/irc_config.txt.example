@@ -2,3 +2,4 @@ server: irc.freenode.net
 port: 6667
 channel: #logbot_test
 nick: lumberjack
+reconnect: 300
