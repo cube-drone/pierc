@@ -346,7 +346,7 @@ function irc_render( item )
 // Make links clickable, and images images
 function link_replace( string )
 {
-	links = string.match( /(http:&#x2F;&#x2F;\S*)/g  );
+	links = string.match( /(https?:&#x2F;&#x2F;\S*)/g  );
 	if (links)
 	{
 		for( var i = 0; i < links.length; i++ )
