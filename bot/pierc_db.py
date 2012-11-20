@@ -2,7 +2,7 @@ import MySQLdb
 import config
 import datetime
 
-class LumberJack_Database:
+class Pierc_DB:
 	
 	def __init__(self, server, port, database, user, password):
 		self.conn = MySQLdb.connect ( host = server,
@@ -55,7 +55,7 @@ class LumberJack_Database:
 
 if __name__ == "__main__":
 	mysql_config = config.config("mysql_config.txt")
-	db = LumberJack_Database( mysql_config["server"],
+	db = Pierc_DB( mysql_config["server"],
 						int(mysql_config["port"]),
 						mysql_config["database"], 
 						mysql_config["user"],

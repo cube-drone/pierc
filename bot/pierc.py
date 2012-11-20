@@ -11,7 +11,7 @@ import time
 import datetime
 
 #mine
-import LumberJack_Database
+import pierc_db
 import config
 
 
@@ -111,7 +111,7 @@ class Logger(irclib.SimpleIRCClient):
 	def on_ping(self, connection, event):
 		self.last_ping = 0
 		try:
-			db = LumberJack_Database.LumberJack_Database( self.mysql_server,
+			db = pierc_db.Pierc_DB( self.mysql_server,
 												 			self.mysql_port,
 												 			self.mysql_database, 
 											   	 			self.mysql_user,

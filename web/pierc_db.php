@@ -21,7 +21,7 @@ class db_class
 	
 }
 
-class lumberjack_db extends db_class
+class pierc_db extends db_class
 {
 	protected function hashinate( $result )
 	{

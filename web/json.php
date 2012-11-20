@@ -3,7 +3,7 @@
 
 error_reporting( E_ERROR | E_WARNING | E_PARSE ); 
 
-include("LumberJack_Database.php");
+include("pierc_db.php");
 include("config.php");
 
 $pdb = config::get_db();
