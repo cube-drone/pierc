@@ -38,7 +38,7 @@
         <article class="markdown-body">
           <h3>What?</h3>
 
-<p>Pierc is an IRC Logbot, paired with a web application for browsing and searching through logs.  It was previously named 'Lumberjack', so that name shows up a lot in the code. I'm changing it, gradually. </p>
+<p>Pierc is an IRC Logbot, paired with a web application for browsing and searching through logs.  </p>
 
 <p>It is written in Python (for the logger), and PHP &amp; JavaScript (for the client).</p>
 
@@ -101,17 +101,17 @@ me@puter: ~/bot/$ cp mysql_config.txt.example mysql_config.txt
 
 <p>To install the tables in the database, run the command:</p>
 
-<pre><code>me@puter: ~/bot/$ python LumberJack_Database.py
+<pre><code>me@puter: ~/bot/$ python pierc_db.py
 </code></pre>
 
 <p>To run the logger, run:</p>
 
-<pre><code>me@puter: ~/bot/$ python LumberJack.py
+<pre><code>me@puter: ~/bot/$ python pierc.py
 </code></pre>
 
 <p>Notably, if you're running Pierc on a remote server, you might consider sending output to a file, disabling 'hangup', and nice-ing it.</p>
 
-<pre><code>me@remote: ~/bot/$ nohup nice LumberJack.py &amp;
+<pre><code>me@remote: ~/bot/$ nohup nice pierc.py &amp;
 </code></pre>
 
 <h4>3. Make Her Open The Client</h4>
