@@ -1,0 +1,153 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Pierc</title>
+  <meta name="description" content="A python bot that logs IRC channels, and a PHP/JS interface for browsing said logs. ">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Pierc</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">A python bot that logs IRC channels, and a PHP/JS interface for browsing said logs. </p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/classam/pierc/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/classam/pierc/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/classam/pierc" class="code">View Pierc on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h3>What?</h3>
+
+<p>Pierc is an IRC Logbot, paired with a web application for browsing and searching through logs.  It was previously named 'Lumberjack', so that name shows up a lot in the code. I'm changing it, gradually. </p>
+
+<p>It is written in Python (for the logger), and PHP &amp; JavaScript (for the client).</p>
+
+<h3>Why?</h3>
+
+<p>A lot of companies and projects use IRC chat for internal team communication. It's a great way to connect a team semi-synchronously. The only trouble is that an individual team member only has logs of the conversation for when he's around. Clever folks just leave their IRC client logged in all of the time, and log into that whenever necessary — but I'd argue that that's a bit of a pain. Sometimes, teams need a way to archive and search through IRC logs.</p>
+
+<h3>Installation</h3>
+
+<h4>Requirements</h4>
+
+<p>Pierc requires that you have the following...</p>
+
+<ul>
+<li>A web server, capable of running PHP5 applications, with MySQL installed.</li>
+<li>A computer with a stable connection to the internet, running Python, with Python-MySQL installed.</li>
+</ul><h4>1. Cut A Hole In The Database</h4>
+
+<p>On your webserver, create a MySQL database for use with Pierc, and a user/password combination that can access the DB.</p>
+
+<pre><code>$ mysql -u adminusername -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5340 to server version: 3.23.54
+
+Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+
+mysql&gt; CREATE DATABASE pierc;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; GRANT ALL PRIVILEGES ON pierc.* TO "pierc_user"@"hostname"
+    -&gt; IDENTIFIED BY "pierc_password";
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql&gt; EXIT
+Bye
+$ 
+</code></pre>
+
+<p>If your webserver is not going to be the same computer as the one running the logger, the database will need to be configured to allow remote login.</p>
+
+<h4>2. Put Your IRC Bot In That Database</h4>
+
+<p>The bot folder in the download contains all of the code necessary to run the log bot. Unpack it into a directory.</p>
+
+<p>Install Python, and the mysql-python libraries. Note that, on Ubuntu (and other Debian based OSes), this requires a simple <code>apt-get install python-mysql</code>.</p>
+
+<p>To configure the bot, copy irc_config.txt.example to irc_config.txt, and mysql_config.txt.example to mysql_config.txt</p>
+
+<pre><code>me@puter: ~/bot/$ cp irc_config.txt.example irc_config.txt
+me@puter: ~/bot/$ cp mysql_config.txt.example mysql_config.txt
+</code></pre>
+
+<p>Set the variables in irc_config to correspond to the channel that you want to log.</p>
+
+<p>Set the variables in mysql_config to correspond to the database that you're logging to.</p>
+
+<p>To install the tables in the database, run the command:</p>
+
+<pre><code>me@puter: ~/bot/$ python LumberJack_Database.py
+</code></pre>
+
+<p>To run the logger, run:</p>
+
+<pre><code>me@puter: ~/bot/$ python LumberJack.py
+</code></pre>
+
+<p>Notably, if you're running Pierc on a remote server, you might consider sending output to a file, disabling 'hangup', and nice-ing it.</p>
+
+<pre><code>me@remote: ~/bot/$ nohup nice LumberJack.py &amp;
+</code></pre>
+
+<h4>3. Make Her Open The Client</h4>
+
+<p>The web folder in the download contains all of the code necessary to run the client.</p>
+
+<p>Plunk the directory's contents down in a Apache server, one that's running PHP and PHP-MySQL.</p>
+
+<p>To configure the client, copy config.php.example to config.php</p>
+
+<pre><code>me@puter: ~/bot/$ cp config.php.example config.php
+</code></pre>
+
+<p>Then, set the database details and default channel to mirror the bot's settings.</p>
+
+<p>You should be GOOD TO GO! Try navigating to the client from the web!</p>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/classam" class="avatar"><img src="https://secure.gravatar.com/avatar/06673f216ab336e11d907e7db850b905?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/classam">classam</a> maintains <a href="https://github.com/classam/pierc">Pierc</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/classam/pierc/tarball/master" class="tar">tar</a><a href="https://github.com/classam/pierc/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
+</html>
