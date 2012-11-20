@@ -47,7 +47,7 @@ class lumberjack_db extends db_class
 		$channel = mysql_real_escape_string( $channel );
 		$n = (int)$n;
 		$query = "
-			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' ORDER BY time DESC, id DESC LIMIT $n;";
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' ORDER BY id DESC LIMIT $n;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
@@ -100,15 +100,15 @@ class lumberjack_db extends db_class
 		return array_reverse($this->hashinate($results));
 	}
 	
-	public function get_offset( $channel, $id)
+	// Returns the number of records in 'channel' with an ID below $id
+	public function get_count( $channel, $id)
 	{
 		$channel = mysql_real_escape_string( $channel );
-		$n = (int)$n;
+		$id = (int)$id;
 		$query = "
 			SELECT COUNT(*) as count FROM main 
 				WHERE channel = '$channel' 
-				AND id < $id 
-				GROUP BY channel;";
+				AND id < $id;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
@@ -125,12 +125,27 @@ class lumberjack_db extends db_class
 	
 	public function get_context( $channel, $id, $n)
 	{
+		// Let's imagine that we have 800,000 records, divided
+		// between two different channels, #hurf and #durf. 
+		// we want to select the $n (50) records surrounding
+		// id-678809 in #durf. So, first we count the number 
+		// of records in # durf that are below id-678809. 
+		//
+		// Remember: OFFSET is the number of records that MySQL
+		// will skip when you do a SELECT statement - 
+		// So "SELECT * FROM main LIMIT 50 OFFSET 150 will select
+		// rows 150-200. 
+		//
+		// If we used the $count as an $offset, we'd have a conversation
+		// _starting_ with id-678809 - but we want to capture the 
+		// conversation _surrounding_ id-678809, so we subtract 
+		// $n (50)/2, or 25.
+ 
 		$channel = mysql_real_escape_string($channel);
-		$n = (int)$n + (int)$offset;
-		$offset = (int) $offset;
 		$id = (int)$id;
+		$n = (int)$n;
 		
-		$count = $this->get_offset( $channel, $id );
+		$count = $this->get_count( $channel, $id );
 		
 		$offset = $count - (int)($n/2);
 		
@@ -144,7 +159,7 @@ class lumberjack_db extends db_class
 				FROM (SELECT * FROM main 
 						WHERE channel = '$channel'
 						LIMIT $n OFFSET $offset) channel_table
-				ORDER BY time DESC ;
+				ORDER BY id DESC ;
 				";
 		
 		$results = mysql_query( $query, $this->_conn);
