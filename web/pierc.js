@@ -13,6 +13,13 @@ var hash = "#";			// The most recent hash value in the URL ("#search-poop")
 var current_offset = 50; // The current search offset;
 var most_recent_search = ""; //The last thing searched for. 
 
+function everything_has_failed( xhr ){
+	clear();
+	$("#horrible_error").show();
+	$("#error").html( xhr.responseText );
+
+}
+
 
 // On Load
 $(function() {
@@ -97,18 +104,23 @@ function home()
 	$("#searchoptions").hide();	
 	// Ajax call to populate table
 	loading()
-	$.getJSON("json.php",
-        function(data){
-        	first_id = data[0].id;
-        	$(data).each( function(i, item) { 	
-        										$(irc_render(item)).appendTo("#irc"); 
-        										last_id = item.id; 
-        									});
-        	scroll_to_bottom();
-        	done_loading();
-		window.location.hash = "home";
-   		hash = window.location.hash;
-        });
+	
+	$.ajax({
+		url: "json.php",
+		dataType: "json",
+		success: function(data){
+			first_id = data[0].id;
+			$(data).each( function(i, item) { 	
+				$(irc_render(item)).appendTo("#irc"); 
+				last_id = item.id; 
+			});
+			scroll_to_bottom();
+			done_loading();
+			window.location.hash = "home";
+			hash = window.location.hash;
+		}, 
+		error: everything_has_failed
+	});
 }
 
 // Check if anything 'new' has been said in the past minute or so. 
@@ -119,18 +131,17 @@ function refresh()
 	$.getJSON("json.php", { 'type':'update', 'id': last_id },
         function(data){
         	$(data).each( function(i, item) { 
-        										try
-        										{
-        											$(irc_render(item)).appendTo("#irc"); last_id = item.id; 
-        										}
-        										catch(err)
-        										{
-        											// do nuffins
-        										}
-        									
-        									});
+			try
+			{
+				$(irc_render(item)).appendTo("#irc"); last_id = item.id; 
+			}
+			catch(err)
+			{
+				// do nuffins
+			}
+		});
 		done_loading();
-        });
+        }).error(everything_has_failed);
 }
 
 // Perform a search for the given search value. Populate the page with the results.
@@ -153,20 +164,18 @@ function search_for( searchvalue )
 	$.getJSON("json.php", {'search':searchvalue}, 
         function(data){
 		if( data.length < 50 ) { $("#searchoptions").hide(); }	
-        	$(data).each( function(i, item) { try
-        										{
-        											$(irc_render(item)).appendTo("#irc");
-        										}
-        										catch(err)
-        										{
-        											// do nuffins
-        										}
-        									} );
-        $("#irc").addClass("searchresult");
-        done_loading(); 
-        scroll_to_bottom();
-        
-        });
+        	$(data).each( function(i, item) { 
+			try{
+				$(irc_render(item)).appendTo("#irc");
+			}
+			catch(err){
+				// do nuffins
+			}
+		} );
+		$("#irc").addClass("searchresult");
+		done_loading(); 
+		scroll_to_bottom();
+        }).error(everything_has_failed);
 }
 
 // Perform a search for the search value in the #searchbox element. 
@@ -194,17 +203,17 @@ function context(id)
         function(data){
         	first_id = data[0].id;
         	$(data).each( function(i, item) { 	
-        										$(irc_render(item)).appendTo("#irc"); 
-        										last_id = item.id; 
-        									});
+			$(irc_render(item)).appendTo("#irc"); 
+			last_id = item.id; 
+		});
         					
         	// After
         	scroll_to_id( id );
-        	$('#irc-'+id).animate({fontSize: "150%"}, 2500);
+		$('#irc-'+id).addClass('highlighted' )
         	done_loading();
         	window.location.hash = "id-"+id;
         	hash = window.location.hash;
-        });
+        }).error(everything_has_failed);
     
 }
 
@@ -228,7 +237,7 @@ function load_more_search_results()
 		scroll_to_id( id );
 		done_loading();
 		current_offset += 50;
-	});	
+        }).error(everything_has_failed);
 	return false;
 }
 
@@ -241,12 +250,12 @@ function page_up()
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").prependTo("#irc");
         	$(data).each( function(i, item) { 	
-        										$(irc_render(item)).prependTo("#irc"); 
-        										first_id = item.id; 
-        									});
+			$(irc_render(item)).prependTo("#irc"); 
+			first_id = item.id; 
+		});
         	scroll_to_id( first_id );
 		done_loading();
-        });
+        }).error(everything_has_failed);
  	return false;   
 }
 
@@ -259,13 +268,13 @@ function page_down()
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").appendTo("#irc");
         	$(data).each( function(i, item) { 	
-        										$(irc_render(item)).appendTo("#irc"); 
-        										last_id = item.id; 
-        									});
+			$(irc_render(item)).appendTo("#irc"); 
+			last_id = item.id; 
+		});
         								
         	scroll_to_bottom();
 		done_loading();
-        });
+        }).error(everything_has_failed);
     return false;
 }
 
@@ -297,12 +306,12 @@ function tag( tagname )
 	$.getJSON("json.php", {'type':'tag', 'tag':tagname, 'n':15 },
         function(data){
         	$(data).each( function(i, item) { 	
-        										$(irc_render(item)).appendTo("#irc");
-        									});
+			$(irc_render(item)).appendTo("#irc");
+		});
         									
 		done_loading();
         	scroll_to_bottom();
-        });
+        }).error(everything_has_failed);
     return false;
 }
 
