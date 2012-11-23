@@ -23,6 +23,7 @@ function everything_has_failed( xhr ){
 
 // On Load
 $(function() {
+	$("#searchoptions").hide();	
 	
 	// check for new content every N seconds
     setInterval("refresh()", irc_refresh_in_seconds * 1000);
@@ -39,7 +40,6 @@ $(function() {
 	$("#events").click( events );
 	$("#important").click( important );
 	
-	$("#searchoptions").hide();	
 });
 
 // Navigate around the site based on the site hash.
@@ -50,7 +50,7 @@ function hashnav()
 	if( hash.substring(1, 7) == "search")
 	{
 		var searchterm = hash.substring( 8, hash.length );
-		$("#searchbox").attr({"value":searchterm});
+		$("#searchbox").attr({"value":decodeURIComponent(searchterm)});
 		search();
 		return true;
 	}
@@ -175,6 +175,7 @@ function search_for( searchvalue )
 		$("#irc").addClass("searchresult");
 		done_loading(); 
 		scroll_to_bottom();
+		highlight( searchvalue );
         }).error(everything_has_failed);
 }
 
@@ -229,6 +230,7 @@ function load_more_search_results()
         	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").prependTo("#irc");
 		var id = 0;
 		if( data.length < 50 ) { $("#searchoptions").hide(); }	
+		else{ $("#searchoptions").show(); }
 		data.reverse();
 		$(data).each( function( i, item) {
 			$(irc_render(item)).prependTo("#irc");
@@ -237,6 +239,7 @@ function load_more_search_results()
 		scroll_to_id( id );
 		done_loading();
 		current_offset += 50;
+		highlight( most_recent_search );
         }).error(everything_has_failed);
 	return false;
 }
@@ -345,17 +348,46 @@ function irc_render( item )
 	else if (item.type == "nick") { construct_string += "is now known as ";}
 	else if (item.type == "action") { } 
 
-	construct_string += link_replace(html_escape(item.message)) + "</td>";
+	construct_string += link_replace(spanify(html_escape(item.message))) + "</td>";
 	var message_date = datetimeify(item.time);
 	var pretty_date = human_date(message_date);
 	construct_string += "<td class='date'>" + pretty_date + "</td>";
 	return $(construct_string);
 }
 
+// Make EVERY WORD A SPAN TAG moo hoo ha ha ha 
+function spanify( string )
+{
+	var split = $(string.split(" "));
+	var join = []
+	split.each( function(i, thing)
+	{
+		if( thing[0] == 'h' && thing[1] == 't' ){ join.push( thing ); }
+		else{
+			join.push( "<span class='"+thing.toLowerCase().replace(/\W/g, '')+"'>"+thing+"</span>" );
+		}
+	});
+	return join.join(" ");
+}
+
+function highlight( words )
+{
+	var split = $(words.split(/[ (%2520)]/));
+	split.each( function( i, word)
+	{
+		var random = Math.floor((Math.random()*10)+1)
+		if( word.length > 3 ){
+			$("span[class*="+word.toLowerCase().replace(/\W/g, '')+"]").addClass("search-highlight");
+			$("span[class*="+word.toLowerCase().replace(/\W/g, '')+"]").addClass("highlight-"+random);
+		}
+	});
+	
+}
+
 // Make links clickable, and images images
 function link_replace( string )
 {
-	links = string.match( /(https*:&#x2F;&#x2F;\S*)/g  );
+	var links = string.match( /(https*:&#x2F;&#x2F;\S*)/g  );
 	if (links)
 	{
 		for( var i = 0; i < links.length; i++ )

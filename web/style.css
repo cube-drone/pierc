@@ -1,5 +1,28 @@
 body{ margin: 0; padding: 0; font-family: Palatino; }
 
+
+/* important: this is dumb. */
+.search-highlight{ 
+	font-size: x-large;
+	font-weight: bold;
+	font-family: Helvetica, Arial;
+	background-color: orange;
+	color: white;
+	border-radius: 5px;
+	padding: 5px;
+	margin: 2px;  }
+.highlight-1{ background-color: purple; }
+.highlight-2{ background-color: brown; }
+.highlight-3{ background-color: salmon; }
+.highlight-4{ background-color: brick; }
+.highlight-5{ background-color: black; }
+.highlight-6{ background-color: RoyalBlue; }
+.highlight-7{ background-color: Sienna; }
+.highlight-8{ background-color: green; }
+.highlight-9{ background-color: teal; }
+.highlight-10{ background-color: HotPink; }
+
+
 .highlighted{ font-size: x-large; }
 
 #events { display: none; } 
