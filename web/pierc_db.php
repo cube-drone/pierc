@@ -62,7 +62,7 @@ class pierc_db extends db_class
 		$n = (int)$n;
 		$id = (int)$id;
 		$query = "
-			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id < $id ORDER BY time DESC, id DESC LIMIT $n;";
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id < $id ORDER BY id DESC LIMIT $n;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
@@ -91,7 +91,7 @@ class pierc_db extends db_class
 		$channel = mysql_real_escape_string( $channel );
 		$id = (int)$id;
 		$query = "
-			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY time DESC, id DESC LIMIT 500";
+			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY id DESC LIMIT 500";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
