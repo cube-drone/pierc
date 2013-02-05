@@ -249,6 +249,23 @@ class pierc_db extends db_class
 		
 		return $this->hashinate($results);
 	}
+	
+	public function get_users( $channel )
+	{
+		$query = " SELECT DISTINCT name FROM main; ";
+		$results = mysql_query( $query, $this->_conn);
+		
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		$lines = $this->hashinate($results);
+		$users = array();
+		foreach($lines as $line)
+		{
+			$users[] = $line['name'];
+		} 
+		return $users;
+	}
 }
 ?>
 

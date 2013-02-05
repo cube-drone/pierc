@@ -51,6 +51,13 @@ if ( isset( $_GET['search'] ) )
 	return;
 }	
 
+if ( $_GET['type'] == 'list_users' )
+{
+	$lines = $pdb->get_users( $channel );
+	print json_encode( $lines );
+	return;
+} 
+
 # USER
 if ( $_GET['type'] == 'user' ) 
 {
