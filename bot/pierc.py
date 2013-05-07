@@ -72,7 +72,13 @@ class Logger(irclib.SimpleIRCClient):
 		   e.eventtype() == "pubmsg"):
 			try: 
 				source = e.source().split("!")[0]
-				channel = e.target()[1:]
+
+				# Try to parse the channel name
+				try:
+					channel = e.target()[1:]
+				except TypeError:
+					channel = "undefined"
+
 			except IndexError:
 				source = ""
 			try:
