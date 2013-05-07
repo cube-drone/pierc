@@ -123,7 +123,7 @@ class pierc_db extends db_class
 		return $count;
 	}
 	
-	public function get_context( $channel, $id, $n)
+	public function get_context( $id, $n)
 	{
 		// Let's imagine that we have 800,000 records, divided
 		// between two different channels, #hurf and #durf. 
@@ -140,10 +140,26 @@ class pierc_db extends db_class
 		// _starting_ with id-678809 - but we want to capture the 
 		// conversation _surrounding_ id-678809, so we subtract 
 		// $n (50)/2, or 25.
- 
-		$channel = mysql_real_escape_string($channel);
+		
+
 		$id = (int)$id;
 		$n = (int)$n;
+
+		$query = "
+			SELECT channel 
+				FROM main
+				WHERE id = $id ;
+				";
+
+		$results = mysql_query( $query, $this->_conn);
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+
+		while ($row = mysql_fetch_assoc($results)) {
+			$channel = $row['channel'];
+		}
+
+		$channel = mysql_real_escape_string($channel);
 		
 		$count = $this->get_count( $channel, $id );
 		
@@ -169,18 +185,17 @@ class pierc_db extends db_class
 		return array_reverse($this->hashinate($results));
 	}
 	
-	public function get_search_results( $channel, $search, $n, $offset=0 )
+	public function get_search_results( $search, $n, $offset=0 )
 	{
 		$search = mysql_real_escape_string($search);
-		$channel = mysql_real_escape_string($channel);
 		$n = (int) $n;
 		$offset = (int) $offset;
 		
-		$searchquery = " WHERE channel = '$channel' ";
+		$searchquery = " WHERE ";
 		$searcharray = split("[ (%20)(%25)(%2520)|]", $search);
 		foreach($searcharray as $searchterm )
 		{
-			$searchquery .= "AND (message LIKE '%".mysql_real_escape_string($searchterm)."%' OR name LIKE '%".mysql_real_escape_string($searchterm)."%' ) ";
+			$searchquery .= "(message LIKE '%".mysql_real_escape_string($searchterm)."%' OR name LIKE '%".mysql_real_escape_string($searchterm)."%' ) ";
 		}
 		
 		$n = (int)$n;
@@ -265,6 +280,23 @@ class pierc_db extends db_class
 			$users[] = $line['name'];
 		} 
 		return $users;
+	}
+
+	public function get_channels()
+	{
+		$query = " SELECT DISTINCT channel FROM main WHERE type <> \"nick\" AND channel <> \"error\";";
+		$results = mysql_query( $query, $this->_conn);
+		
+		if (!$results){ print mysql_error(); return false; }
+		if( mysql_num_rows($results) == 0 ) { return false; }
+		
+		$lines = $this->hashinate($results);
+		$channels = array();
+		foreach($lines as $line)
+		{
+			$channels[] = $line['channel'];
+		} 
+		return $channels;
 	}
 }
 ?>
