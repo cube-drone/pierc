@@ -284,7 +284,7 @@ class pierc_db extends db_class
 
 	public function get_channels()
 	{
-		$query = " SELECT DISTINCT channel FROM main WHERE type <> \"nick\" AND channel <> \"error\";";
+		$query = " SELECT DISTINCT channel FROM main WHERE type <> \"nick\" AND channel <> \"undefined\";";
 		$results = mysql_query( $query, $this->_conn);
 		
 		if (!$results){ print mysql_error(); return false; }
