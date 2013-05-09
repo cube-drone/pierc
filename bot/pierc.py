@@ -72,6 +72,13 @@ class Logger(irclib.SimpleIRCClient):
 		   e.eventtype() == "pubmsg"):
 			try: 
 				source = e.source().split("!")[0]
+
+				# Try to parse the channel name
+				try:
+					channel = e.target()[1:]
+				except TypeError:
+					channel = "undefined"
+
 			except IndexError:
 				source = ""
 			try:
@@ -79,8 +86,11 @@ class Logger(irclib.SimpleIRCClient):
 			except IndexError:
 				text = ""
 		
+			# Print message to stdout
+			print str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + " ("+ e.eventtype() +") [#" + channel + "] <" + source + "> " + text 
+		
 			# Prepare a message for the buffer
-			message_dict = {"channel":self.channel.strip("#"),
+			message_dict = {"channel":channel,
 							"name": source,
 							"message": text,
 							"type": e.eventtype(),

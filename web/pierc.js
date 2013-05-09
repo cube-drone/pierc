@@ -9,6 +9,7 @@ var last_id = 0;		// The ID of the comment at the very bottom of the page
 var first_id = 0;		// The ID of the comment at the very top of the page
 var refresh_on = true;	// Whether or not the 'refresh' action is currently operating
 var hash = "#";			// The most recent hash value in the URL ("#search-poop")
+var channelselect = $('#channellist').val();	// Selected channel in dropdown
 
 var current_offset = 50; // The current search offset;
 var most_recent_search = ""; //The last thing searched for. 
@@ -23,6 +24,12 @@ function everything_has_failed( xhr ){
 
 // On Load
 $(function() {
+	$("#channellist").change(function(){
+		clear();
+		refresh_on = true;
+		home();
+	});
+
 	$("#searchoptions").hide();	
 	
 	// check for new content every N seconds
@@ -64,6 +71,7 @@ function hashnav()
 	{
 		var id = hash.substring( 4, hash.length );
 		context(id);
+		$("#toolbar_inner").html("<h3><a href=\"./\">Back to channellist</a>.</h3>");
 		return true;
 	}
 	else if (hash.substring(1, 5) == "home") 
@@ -97,6 +105,8 @@ function hashnav_check()
 // This is the default 'home' activity for the page.
 function home()
 {
+	var channelselect = $('#channellist').val();
+
 	clear();
 	refresh_on = true;
 	$('#irc').removeClass("searchresult");
@@ -105,8 +115,11 @@ function home()
 	// Ajax call to populate table
 	loading()
 	
+	//alert($('#channellist').val());
+
 	$.ajax({
 		url: "json.php",
+		data: { channel: channelselect},
 		dataType: "json",
 		success: function(data){
 			first_id = data[0].id;
@@ -126,9 +139,12 @@ function home()
 // Check if anything 'new' has been said in the past minute or so. 
 function refresh()
 {
+	// Selected value in dropdown
+	var channelselect = $('#channellist').val();
+
 	if( !refresh_on ) { return; }
 	loading();
-	$.getJSON("json.php", { 'type':'update', 'id': last_id },
+	$.getJSON("json.php?channel=" + channelselect, { 'type':'update', 'id': last_id },
         function(data){
         	$(data).each( function(i, item) { 
 			try
@@ -247,9 +263,12 @@ function load_more_search_results()
 // Add a page of IRC chat _before_ the current page of IRC chat
 function page_up()
 {	
+	// Selected value in dropdown
+	var channelselect = $('#channellist').val();
+	
 	// Ajax call to populate table
 	loading();
-	$.getJSON("json.php", {'type':'context', 'id':first_id, 'n':20, 'context':'before' },
+	$.getJSON("json.php?channel=" + channelselect, {'type':'context', 'id':first_id, 'n':20, 'context':'before' },
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").prependTo("#irc");
         	$(data).each( function(i, item) { 	
@@ -265,9 +284,12 @@ function page_up()
 // Add a page of IRC chat _after_ the current page of IRC chat
 function page_down()
 {	
+	// Selected value in dropdown
+	var channelselect = $('#channellist').val();
+	
 	loading();
 	
-	$.getJSON("json.php", {'type':'context', 'id':last_id, 'n':20, 'context':'after' },
+	$.getJSON("json.php?channel=" + channelselect, {'type':'context', 'id':last_id, 'n':20, 'context':'after' },
         function(data){
         	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").appendTo("#irc");
         	$(data).each( function(i, item) { 	
@@ -338,7 +360,7 @@ function irc_render( item )
 		message_tag = "";
 	}
 	
-	var construct_string = "<tr id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
+	var construct_string = "<tr data-channel="+ html_escape(item.channel) +" id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
 	construct_string += "<td class='name'><a href='#id-"+item.id+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
 	
 	if (item.type == "pubmsg") { construct_string += ":&nbsp;";}

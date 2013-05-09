@@ -1,3 +1,15 @@
+<?php 
+// All of the JSON calls are handled here. 
+
+error_reporting( E_ERROR | E_WARNING | E_PARSE ); 
+
+include("pierc_db.php");
+include("config.php");
+
+$pdb = config::get_db();
+$channels = $pdb->get_channels() ;
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -17,6 +29,14 @@
 <div id="toolbar"> 
 	<div id="toolbar_inner">
 	
+	<select id="channellist">
+		<?php
+			foreach ($channels as $channel) {
+				echo "<option>".$channel."</option>";
+			}
+		?>
+	</select>
+
 	<form id="search" style="display:inline;" action="#loading">
 		<input id="searchbox" placeholder="Search" tabindex="1" type="text" />
 		<input id="searchbutton" tabindex="2" type="submit" value="Search"/>

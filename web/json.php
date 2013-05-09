@@ -1,7 +1,7 @@
 <?php 
 // All of the JSON calls are handled here. 
 
-error_reporting( E_ERROR | E_WARNING | E_PARSE ); 
+error_reporting( E_ALL ); 
 
 include("pierc_db.php");
 include("config.php");
@@ -31,7 +31,7 @@ if( isset( $_GET['channel'] ) )
 }
 else
 {
-	$channel = config::$default_channel;
+	$channel =  config::$default_channel;
 }
 
 # SEARCH 
@@ -46,7 +46,7 @@ if ( isset( $_GET['search'] ) )
 	}
 	
 	// Search channel for $search
-	$lines = $pdb->get_search_results( $channel, $search, $n, $offset );
+	$lines = $pdb->get_search_results( $search, $n, $offset );
 	print json_encode( $lines );
 	return;
 }	
@@ -88,7 +88,7 @@ if( $_GET['type'] == 'context' )
 	// Used to retrieve a page centered about an ID value
 	if( $context == "middle" )
 	{
-		$lines = $pdb->get_context( $channel, $id,  $n );
+		$lines = $pdb->get_context( $id,  $n );
 	}
 	// Used to retrieve a page after the existing page
 	if( $context == "after" )
