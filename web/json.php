@@ -8,6 +8,11 @@ include("config.php");
 
 $pdb = config::get_db();
 
+if( !isset( $_GET['type'] ) )
+{
+	$_GET['type'] = 'balls ahoy'; 
+}
+
 // n: The number of results to return (centered around id, if provided)
 if( isset( $_GET['n']) ) 
 {
