@@ -17,7 +17,7 @@ $channels = $pdb->get_channels() ;
 <head> 
 	<title>IRC Archive</title>
 	<link rel="stylesheet" href="style.css" type="text/css" />
-	
+	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"> </script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"> </script>
 	<script type="text/javascript" src="pierc.js"> </script>
@@ -29,25 +29,30 @@ $channels = $pdb->get_channels() ;
 <div id="toolbar"> 
 	<div id="toolbar_inner">
 	
-	<select id="channellist">
-		<?php
-			foreach ($channels as $channel) {
-				echo "<option>".$channel."</option>";
-			}
-		?>
-	</select>
+	<div class="toolbar-break">
+		<select id="channellist">
+			<?php
+				foreach ($channels as $channel) {
+					echo "<option>".$channel."</option>";
+				}
+			?>
+		</select>
 
-	<form id="search" style="display:inline;" action="#loading">
-		<input id="searchbox" placeholder="Search" tabindex="1" type="text" />
-		<input id="searchbutton" tabindex="2" type="submit" value="Search"/>
-	</form>
+		<form id="search" style="display:inline;" action="#loading">
+			<input id="searchbox" placeholder="Search" tabindex="1" type="text" />
+			<input id="searchbutton" tabindex="2" type="submit" value="Search"/>
+		</form>
+	</div>
 	<a id="home" class='toolbutton' href="#">Home</a>
 	<span id="searchoptions"> 
 	<a id="load_more" class='toolbutton' href="#">More</a> 
 	</span>
 	<span id="options">
-		<a id="prev" class='toolbutton' href="#">&lt;&lt;</a> 
-		<a id="next" class='toolbutton' href="#">&gt;&gt;</a> 
+		<a id="prev" class='toolbutton' href="#">&laquo;</a> 
+		<a id="next" class='toolbutton' href="#">&raquo;</a> 
+	</span>
+	<span id="hide-join-quit">
+		<label><input id="join-quit-toggle" type="checkbox" /> hide join/quit</label>
 	</span>
 	<img id="loading" src="images/ajax-loader.gif"/>
 	</div>
@@ -70,8 +75,8 @@ $channels = $pdb->get_channels() ;
 	
 <div id="content">
 	
-	<table id="irc">
-	</table>
+	<ul id="irc">
+	</ul>
 	<div id="bottom"></div>
 	
 </div>
