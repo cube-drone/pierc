@@ -18,9 +18,7 @@ function everything_has_failed( xhr ){
 	clear();
 	$("#horrible_error").show();
 	$("#error").html( xhr.responseText );
-
 }
-
 
 // On Load
 $(function() {
@@ -28,6 +26,10 @@ $(function() {
 		clear();
 		refresh_on = true;
 		home();
+	});
+
+	$("#join-quit-toggle").click(function(){
+		hideJoinQuit();
 	});
 
 	$("#searchoptions").hide();	
@@ -46,8 +48,50 @@ $(function() {
 	$("#next").click( page_down );
 	$("#events").click( events );
 	$("#important").click( important );
+
+
+
+	var liveSearchTimer;
+	var liveSearchTimerInterval = 200;
+
+	$("#searchbox").keyup(function(){
+	    liveSearchTimer = setTimeout(liveSearchSubmit, liveSearchTimerInterval);
+	});
+
+	$("#searchbox").keydown(function(){
+	    clearTimeout(liveSearchTimer);
+	});
+
+	function liveSearchSubmit () {
+	    if ($('#searchbox').val()=="")
+	    	home();
+	    else
+	    	search();
+	}
 	
 });
+
+// Hide all join/quit messages
+function hideJoinQuit() {
+	if ($('#join-quit-toggle').is(':checked')) {
+		$('#irc .join, #irc .quit').hide();
+	} else {
+		$('#irc .join, #irc .quit').show();
+	}
+} 
+
+// Display embedable media inline
+// Only images (jpg,gif,png) right now, might extend to youtube links or something eventually
+function displayInlineMedia() {
+	$('.message a:not(.inline-image-link)').each(function() {
+		link = $(this);
+		url = link.attr('href');
+		var testRegex = /^https?:\/\/(?:[a-z\-]+\.)+[a-z]{2,6}(?:\/[^\/#?]+)+\.(?:jpe?g|gif|png)$/;
+		if (testRegex.test(url)) {
+		  link.append('<img src="'+url+'" class="inline-image">').addClass('inline-image-link').attr('target','_blank');
+		}
+	});
+}
 
 // Navigate around the site based on the site hash.
 // This allows for use of the "Back" button, as well as reusable URL structure. 
@@ -71,7 +115,11 @@ function hashnav()
 	{
 		var id = hash.substring( 4, hash.length );
 		context(id);
-		$("#toolbar_inner").html("<h3><a href=\"./\">Back to channellist</a>.</h3>");
+		$("#toolbar_inner").prepend("<span class=\"backbutton\"><a href=\"#\">&laquo; Back to channellist</a>.</span>");
+		$('.backbutton').click(function(){
+			$(this).hide();
+			home();
+		});
 		return true;
 	}
 	else if (hash.substring(1, 5) == "home") 
@@ -127,13 +175,17 @@ function home()
 				$(irc_render(item)).appendTo("#irc"); 
 				last_id = item.id; 
 			});
-			scroll_to_bottom();
 			done_loading();
 			window.location.hash = "home";
 			hash = window.location.hash;
+			hideJoinQuit();
+			displayInlineMedia();
+			scroll_to_bottom();
 		}, 
 		error: everything_has_failed
 	});
+	
+
 }
 
 // Check if anything 'new' has been said in the past minute or so. 
@@ -190,8 +242,11 @@ function search_for( searchvalue )
 		} );
 		$("#irc").addClass("searchresult");
 		done_loading(); 
-		scroll_to_bottom();
+		
 		highlight( searchvalue );
+		hideJoinQuit();
+		displayInlineMedia();
+		scroll_to_bottom();
         }).error(everything_has_failed);
 }
 
@@ -225,11 +280,14 @@ function context(id)
 		});
         					
         	// After
-        	scroll_to_id( id );
+        	
 		$('#irc-'+id).addClass('highlighted' )
         	done_loading();
         	window.location.hash = "id-"+id;
         	hash = window.location.hash;
+        	hideJoinQuit();
+        	displayInlineMedia();
+        	scroll_to_id( id );
         }).error(everything_has_failed);
     
 }
@@ -237,15 +295,15 @@ function context(id)
 // Add n more search results
 function load_more_search_results()
 {
-	if( current_offset < 50 ){ current_offset = 50 };
+	if( current_offset < 40 ){ current_offset = 40 };
 
 	// Ajax call
 	loading();
-	$.getJSON("json.php", {'type':'search', 'n':50, 'offset':current_offset, 'search':most_recent_search },
+	$.getJSON("json.php", {'type':'search', 'n':40, 'offset':current_offset, 'search':most_recent_search },
 	function(data){ 
-        	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").prependTo("#irc");
+        	$("#irc li:first-child").addClass("pagebreak");
 		var id = 0;
-		if( data.length < 50 ) { $("#searchoptions").hide(); }	
+		if( data.length < 40 ) { $("#searchoptions").hide(); }	
 		else{ $("#searchoptions").show(); }
 		data.reverse();
 		$(data).each( function( i, item) {
@@ -254,7 +312,7 @@ function load_more_search_results()
 		});
 		scroll_to_id( id );
 		done_loading();
-		current_offset += 50;
+		current_offset += 40;
 		highlight( most_recent_search );
         }).error(everything_has_failed);
 	return false;
@@ -268,13 +326,15 @@ function page_up()
 	
 	// Ajax call to populate table
 	loading();
-	$.getJSON("json.php?channel=" + channelselect, {'type':'context', 'id':first_id, 'n':20, 'context':'before' },
+	$.getJSON("json.php?channel=" + channelselect, {'type':'context', 'id':first_id, 'n':40, 'context':'before' },
         function(data){
-        	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").prependTo("#irc");
+        	$("#irc li:first-child").addClass("pagebreak");
         	$(data).each( function(i, item) { 	
 			$(irc_render(item)).prependTo("#irc"); 
 			first_id = item.id; 
 		});
+        	hideJoinQuit();
+  				displayInlineMedia(); 
         	scroll_to_id( first_id );
 		done_loading();
         }).error(everything_has_failed);
@@ -289,14 +349,15 @@ function page_down()
 	
 	loading();
 	
-	$.getJSON("json.php?channel=" + channelselect, {'type':'context', 'id':last_id, 'n':20, 'context':'after' },
+	$.getJSON("json.php?channel=" + channelselect, {'type':'context', 'id':last_id, 'n':40, 'context':'after' },
         function(data){
-        	$("<tr class='pagebreak'><td></td> <td>------------------------------</td> <td></td></tr>").appendTo("#irc");
+        	$("#irc li:last-child").addClass("pagebreak");
         	$(data).each( function(i, item) { 	
 			$(irc_render(item)).appendTo("#irc"); 
 			last_id = item.id; 
 		});
-        								
+        	hideJoinQuit();
+  				displayInlineMedia(); 
         	scroll_to_bottom();
 		done_loading();
         }).error(everything_has_failed);
@@ -335,6 +396,8 @@ function tag( tagname )
 		});
         									
 		done_loading();
+        	hideJoinQuit();
+  				displayInlineMedia(); 
         	scroll_to_bottom();
         }).error(everything_has_failed);
     return false;
@@ -360,20 +423,20 @@ function irc_render( item )
 		message_tag = "";
 	}
 	
-	var construct_string = "<tr data-channel="+ html_escape(item.channel) +" id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
-	construct_string += "<td class='name'><a href='#id-"+item.id+"'>" + html_escape(item.name) + "</a>&nbsp;</td><td class='message'>";
+	var construct_string = "<li data-channel="+ html_escape(item.channel) +" id='irc-"+item.id+"' class='"+item.type+" "+message_tag+" " + tag_tag + "'>";
+	construct_string += "<span class='name'><a href='#id-"+item.id+"'>" + html_escape(item.name) + "</a>&nbsp;</span><span class='message'>";
 	
-	if (item.type == "pubmsg") { construct_string += ":&nbsp;";}
-	else if (item.type == "join") { construct_string += "has joined #" + html_escape(item.channel); }
+	if (item.type == "join") { construct_string += "has joined #" + html_escape(item.channel); }
 	else if (item.type == "part") { construct_string += "has left #" + html_escape(item.channel) + " -- "; }
+	else if (item.type == "quit") { construct_string += "has quit -- "; }
 	else if (item.type == "topic") { construct_string += "has changed the topic: <br/>"; } 
-	else if (item.type == "nick") { construct_string += "is now known as ";}
+	else if (item.type == "nick") { construct_string += " is now known as ";}
 	else if (item.type == "action") { } 
 
-	construct_string += link_replace(spanify(html_escape(item.message))) + "</td>";
+	construct_string += link_replace(spanify(html_escape(item.message))) + "</span>";
 	var message_date = datetimeify(item.time);
 	var pretty_date = human_date(message_date);
-	construct_string += "<td class='date'>" + pretty_date + "</td>";
+	construct_string += "<span class='date'>" + pretty_date + "</span>";
 	return $(construct_string);
 }
 
@@ -429,13 +492,13 @@ function link_replace( string )
 // Show the 'loading' widget. 
 function loading()
 {
-	$("#loading").show('fast');
+	$("#loading").fadeIn('fast');
 	document.body.style.cursor = 'wait';
 }
 
 function done_loading()
 {
-	$('#loading').hide('slow');
+	$('#loading').fadeOut('slow');
 	document.body.style.cursor = 'default';
 }
 
@@ -448,17 +511,19 @@ function clear()
 // Scroll to the bottom of the page
 function scroll_to_bottom()
 {
-	$target = $("#bottom");
-	var targetOffset = $target.offset().top;
-	$('html,body').animate({scrollTop: targetOffset}, 1000);
+	setTimeout( function() {
+		$('html, body').animate({scrollTop: $(document).height()}, 200);
+	}, 100)
 }
 
 // Attempt to scroll to the id of the item specified.
 function scroll_to_id(id)
 {
-	$target = $("#irc-"+id);
-	var targetOffset = $target.offset().top - 100;
-	$('html,body').animate({scrollTop: targetOffset}, 1000);
+	setTimeout( function() {
+		$target = $("#irc-"+id);
+		var targetOffset = $target.offset().top - 100;
+		$('html,body').animate({scrollTop: targetOffset}, 200);
+	}, 100)
 }
 
 // MySQL date string (2009-06-13 18:10:59 / yyyy-mm-dd hh:mm:ss )
