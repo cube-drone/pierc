@@ -25,6 +25,8 @@ $channels = $pdb->get_channels() ;
 
 </head>
 <body>
+
+<img id="loading" src="images/ajax-loader.gif"/>
 	
 <div id="toolbar"> 
 	<div id="toolbar_inner">
@@ -54,7 +56,6 @@ $channels = $pdb->get_channels() ;
 	<span id="hide-join-quit">
 		<label><input id="join-quit-toggle" type="checkbox" /> hide join/quit</label>
 	</span>
-	<img id="loading" src="images/ajax-loader.gif"/>
 	</div>
 
 </div>	
