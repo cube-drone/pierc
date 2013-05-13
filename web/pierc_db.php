@@ -187,22 +187,24 @@ class pierc_db extends db_class
 	
 	public function get_search_results( $search, $n, $offset=0 )
 	{
-		$search = mysql_real_escape_string($search);
+		$search = urldecode($search);
 		$n = (int) $n;
 		$offset = (int) $offset;
 		
 		$searchquery = " WHERE ";
-		$searcharray = split("[ (%20)(%25)(%2520)|]", $search);
+		$searcharray = split("[ |]", $search);
 		foreach($searcharray as $searchterm )
 		{
-			$searchquery .= "(message LIKE '%".mysql_real_escape_string($searchterm)."%' OR name LIKE '%".mysql_real_escape_string($searchterm)."%' ) ";
+			$searchquery .= "(message LIKE '%".
+				mysql_real_escape_string($searchterm)."%' OR name LIKE '%".
+				mysql_real_escape_string($searchterm)."%' ) AND";
 		}
 		
 		$n = (int)$n;
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden 
 				FROM main 
-			$searchquery ORDER BY id DESC LIMIT $n OFFSET $offset;";
+			$searchquery true ORDER BY id DESC LIMIT $n OFFSET $offset;";
 		
 		$results = mysql_query( $query, $this->_conn);
 		if (!$results){ print mysql_error(); return false; }
