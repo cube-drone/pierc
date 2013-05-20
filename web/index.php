@@ -16,7 +16,7 @@ $channels = $pdb->get_channels() ;
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" charset="UTF-16">
 <head> 
 	<title>IRC Archive</title>
-	<link rel="stylesheet" href="style.css" type="text/css" />
+	<link rel="stylesheet" href="<?php config::get_theme("style.css") ?>" type="text/css" />
 	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"> </script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"> </script>
@@ -25,8 +25,6 @@ $channels = $pdb->get_channels() ;
 
 </head>
 <body>
-
-<img id="loading" src="images/ajax-loader.gif"/>
 	
 <div id="toolbar"> 
 	<div id="toolbar_inner">
@@ -56,6 +54,7 @@ $channels = $pdb->get_channels() ;
 	<span id="hide-join-quit">
 		<label><input id="join-quit-toggle" type="checkbox" /> hide join/quit</label>
 	</span>
+	<img id="loading" src="<?php config::get_theme("ajax-loader.gif") ?>"/>
 	</div>
 
 </div>	
