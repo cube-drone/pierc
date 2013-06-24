@@ -18,8 +18,8 @@ $channels = $pdb->get_channels() ;
 	<title>IRC Archive</title>
 	<link rel="stylesheet" href="<?php config::get_theme("style.css") ?>" type="text/css" />
 	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"> </script>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"> </script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"> </script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"> </script>
 	<script type="text/javascript" src="pierc.js"> </script>
 	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
 
