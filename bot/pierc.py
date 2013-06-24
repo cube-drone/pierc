@@ -19,7 +19,7 @@ import config
 
 class Logger(irclib.SimpleIRCClient):
 	
-	def __init__(self, server, port, password, channel, nick, 
+	def __init__(self, server, port, nick, password, username, ircname, localaddress, localport, ssl, ipv6, 
 				mysql_server, mysql_port, mysql_database, mysql_user, mysql_password):
 
 	
@@ -28,10 +28,16 @@ class Logger(irclib.SimpleIRCClient):
 		#IRC details
 		self.server = server
 		self.port = port
+		self.nick = nick
 		self.password = password
+		self.username = username
+		self.ircname = ircname
+		self.localaddress = localaddress
+		self.localport = localport
+		self.ssl = ssl
+		self.ipv6 = ipv6
 		self.target = channel
 		self.channel = channel
-		self.nick = nick
 		
 		#MySQL details
 		self.mysql_server = mysql_server
@@ -52,7 +58,7 @@ class Logger(irclib.SimpleIRCClient):
 		self.last_ping = 0
 		self.ircobj.delayed_commands.append( (time.time()+5, self._no_ping, [] ) )
  	
-		self.connect(self.server, self.port, self.nick, self.password)
+		self.connect(self.server, self.port, self.nick, self.password, self.username, self.ircname, self.localaddress, self.localport, self.ssl, self.ipv6)
 	
 	def _no_ping(self):
 		if self.last_ping >= 1200:
@@ -164,13 +170,18 @@ class Logger(irclib.SimpleIRCClient):
 def main():
 	mysql_settings = config.config("mysql_config.txt")
 	irc_settings = config.config("irc_config.txt")
-	
 	c = Logger(
 				irc_settings["server"], 
 				int(irc_settings["port"]), 
-				irc_settings["password"],
-				irc_settings["channel"], 
 				irc_settings["nick"],
+				irc_settings["password"],
+				irc_settings["username"],
+				irc_settings["ircname"],
+				irc_settings["localaddress"],
+				irc_settings["localport"],
+				bool(irc_settings["ssl"]),
+				bool(irc_settings["ipv6"]), 
+				
 				mysql_settings["server"],
 				int(mysql_settings["port"]),
 				mysql_settings["database"],
