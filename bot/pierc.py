@@ -19,7 +19,7 @@ import config
 
 class Logger(irclib.SimpleIRCClient):
 	
-	def __init__(self, server, port, nick, password, username, ircname, localaddress, localport, ssl, ipv6, 
+	def __init__(self, server, port, channel, nick, password, username, ircname, localaddress, localport, ssl, ipv6, 
 				mysql_server, mysql_port, mysql_database, mysql_user, mysql_password):
 
 	
@@ -28,6 +28,8 @@ class Logger(irclib.SimpleIRCClient):
 		#IRC details
 		self.server = server
 		self.port = port
+		self.target = channel
+		self.channel = channel
 		self.nick = nick
 		self.password = password
 		self.username = username
@@ -36,8 +38,6 @@ class Logger(irclib.SimpleIRCClient):
 		self.localport = localport
 		self.ssl = ssl
 		self.ipv6 = ipv6
-		self.target = channel
-		self.channel = channel
 		
 		#MySQL details
 		self.mysql_server = mysql_server
@@ -173,6 +173,7 @@ def main():
 	c = Logger(
 				irc_settings["server"], 
 				int(irc_settings["port"]), 
+				irc_settings["channel"],
 				irc_settings["nick"],
 				irc_settings["password"],
 				irc_settings["username"],
