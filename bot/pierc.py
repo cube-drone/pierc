@@ -19,7 +19,7 @@ import config
 
 class Logger(irclib.SimpleIRCClient):
 	
-	def __init__(self, server, port, channel, nick, 
+	def __init__(self, server, port, password, channel, nick, 
 				mysql_server, mysql_port, mysql_database, mysql_user, mysql_password):
 
 	
@@ -28,6 +28,7 @@ class Logger(irclib.SimpleIRCClient):
 		#IRC details
 		self.server = server
 		self.port = port
+		self.password = password
 		self.target = channel
 		self.channel = channel
 		self.nick = nick
@@ -51,7 +52,7 @@ class Logger(irclib.SimpleIRCClient):
 		self.last_ping = 0
 		self.ircobj.delayed_commands.append( (time.time()+5, self._no_ping, [] ) )
  	
-		self.connect(self.server, self.port, self.nick)
+		self.connect(self.server, self.port, self.nick, self.password)
 	
 	def _no_ping(self):
 		if self.last_ping >= 1200:
@@ -167,6 +168,7 @@ def main():
 	c = Logger(
 				irc_settings["server"], 
 				int(irc_settings["port"]), 
+				irc_settings["password"],
 				irc_settings["channel"], 
 				irc_settings["nick"],
 				mysql_settings["server"],
