@@ -179,7 +179,7 @@ def main():
 				irc_settings["username"],
 				irc_settings["ircname"],
 				irc_settings["localaddress"],
-				irc_settings["localport"],
+				int(irc_settings["localport"]),
 				bool(irc_settings["ssl"]),
 				bool(irc_settings["ipv6"]), 
 				
