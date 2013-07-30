@@ -192,7 +192,7 @@ class pierc_db extends db_class
 		$offset = (int) $offset;
 		
 		$searchquery = " WHERE ";
-		$searcharray = preg_split("[ |]", $search);
+		$searcharray = preg_split("/[ |]/", $search);
 		foreach($searcharray as $searchterm )
 		{
 			$searchquery .= "(message LIKE '%".
