@@ -449,7 +449,7 @@ function spanify( string )
 	{
 		if( thing[0] == 'h' && thing[1] == 't' ){ join.push( thing ); }
 		else{
-			join.push( "<span class='"+thing.toLowerCase().replace(/\W/g, '')+"'>"+thing+"</span>" );
+			join.push( "<span class='spanify-"+thing.toLowerCase().replace(/\W/g, '')+"'>"+thing+"</span>" );
 		}
 	});
 	return join.join(" ");
@@ -462,8 +462,8 @@ function highlight( words )
 	{
 		var random = Math.floor((Math.random()*10)+1)
 		if( word.length > 3 ){
-			$("span[class*="+word.toLowerCase().replace(/\W/g, '')+"]").addClass("search-highlight");
-			$("span[class*="+word.toLowerCase().replace(/\W/g, '')+"]").addClass("highlight-"+random);
+			$("span[class*=spanify-"+word.toLowerCase().replace(/\W/g, '')+"]").addClass("search-highlight");
+			$("span[class*=spanify-"+word.toLowerCase().replace(/\W/g, '')+"]").addClass("highlight-"+random);
 		}
 	});
 	
