@@ -11,7 +11,13 @@ class db_class
 		$this->_conn = mysql_connect( $server.$port, $user, $password );
 		if (!$this->_conn){ die ("Could not connect: " + mysql_error() ); }
 		mysql_select_db( $database, $this->_conn );
-		$this->timezone = $timezone;
+		
+		// Verify that we received a proper time zone, otherwise fall back to default
+		$allZones = DateTimeZone::listIdentifiers();
+		if(!in_array($timezone, $allZones)) {
+			$timezone = "America/Vancouver";
+		}
+		$this->timezone = new DateTimeZone($timezone);		
 	}
 	
 	public function __destruct( )
@@ -23,6 +29,7 @@ class db_class
 
 class pierc_db extends db_class
 {
+
 	protected function hashinate( $result )
 	{
 		$lines = array();
@@ -33,7 +40,7 @@ class pierc_db extends db_class
 			{
 				date_default_timezone_set('UTC');
 				$dt = date_create( $row['time']);
-				$dt->setTimezone( new DateTimeZone($this->timezone));
+				$dt->setTimezone( $this->timezone );
 				$row['time'] = $dt->format("Y-m-d H:i:s"); 
 			}
 			$lines[$counter] = $row;
