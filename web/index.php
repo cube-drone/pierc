@@ -54,6 +54,9 @@ $channels = $pdb->get_channels() ;
 	<span id="hide-join-quit">
 		<label><input id="join-quit-toggle" type="checkbox" /> hide join/quit</label>
 	</span>
+	<span id="inline-media-menu">
+		<label><input id="inline-media-toggle" type="checkbox" checked="checked" /> enable inline media</label>
+	</span>
 	<img id="loading" src="<?php config::get_theme("ajax-loader.gif") ?>"/>
 	</div>
 

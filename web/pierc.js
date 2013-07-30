@@ -31,6 +31,10 @@ $(function() {
 	$("#join-quit-toggle").click(function(){
 		hideJoinQuit();
 	});
+	
+	$("#inline-media-toggle").click(function(){
+		toggleInlineMedia();
+	});
 
 	$("#searchoptions").hide();	
 	
@@ -80,6 +84,14 @@ function hideJoinQuit() {
 	}
 } 
 
+function toggleInlineMedia() {
+	if ($('#inline-media-toggle').is(':checked')) {
+		$('#irc .inline-image').show();
+	} else {
+		$('#irc .inline-image').hide();
+	}
+} 
+
 // Display embedable media inline
 // Only images (jpg,gif,png) right now, might extend to youtube links or something eventually
 function displayInlineMedia() {
@@ -89,6 +101,8 @@ function displayInlineMedia() {
 		var testRegex = /^https?:\/\/(?:[a-z\-]+\.)+[a-z]{2,6}(?:\/[^\/#?]+)+\.(?:jpe?g|gif|png)$/;
 		if (testRegex.test(url)) {
 		  link.append('<img src="'+url+'" class="inline-image">').addClass('inline-image-link').attr('target','_blank');
+		  // Re-hide media if necessary
+		  toggleInlineMedia();
 		}
 	});
 }
@@ -449,7 +463,7 @@ function spanify( string )
 	{
 		if( thing[0] == 'h' && thing[1] == 't' ){ join.push( thing ); }
 		else{
-			join.push( "<span class='spanify-"+thing.toLowerCase().replace(/\W/g, '')+"'>"+thing+"</span>" );
+			join.push( "<span class='spanify-"+thing.toLowerCase().replace(/\W/g, '')+"'>"+thing+"</span>" ); 
 		}
 	});
 	return join.join(" ");

@@ -108,7 +108,7 @@ a {
 		background-color: #fff
 	}
 
-	#hide-join-quit label {
+	#hide-join-quit label, #inline-media-menu label {
 		font-size: 12px;
 	}
 
