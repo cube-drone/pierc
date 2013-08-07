@@ -53,17 +53,20 @@ $(function() {
 	$("#events").click( events );
 	$("#important").click( important );
 
+	// Live Search
+	// This should prevent the sending of too many queries (i.e. one per letter typed).
 
-
+	// Reference to the pending search query.
 	var liveSearchTimer;
+	// Delay after typing a key, before the search request is sent.
 	var liveSearchTimerInterval = 200;
 
+	// When a key is typed
 	$("#searchbox").keyup(function(){
-	    liveSearchTimer = setTimeout(liveSearchSubmit, liveSearchTimerInterval);
-	});
-
-	$("#searchbox").keydown(function(){
-	    clearTimeout(liveSearchTimer);
+		// Cancel the prending query
+		clearTimeout(liveSearchTimer);
+	    // Create a new delayed one
+		liveSearchTimer = setTimeout(liveSearchSubmit, liveSearchTimerInterval);
 	});
 
 	function liveSearchSubmit () {
@@ -229,6 +232,12 @@ function refresh()
 // Perform a search for the given search value. Populate the page with the results.
 function search_for( searchvalue )
 {
+	// If the previous search was for the same term, don't search again
+	if(searchvalue == most_recent_search)
+	{
+		return;
+	}
+
 	current_offset = 50;
 	most_recent_search = searchvalue;	
 	window.location.hash = "search-"+searchvalue;
