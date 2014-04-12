@@ -457,6 +457,7 @@ function irc_render( item )
 // Make EVERY WORD A SPAN TAG moo hoo ha ha ha 
 function spanify( string )
 {
+	if (!string){ return string; }
 	var split = $(string.split(" "));
 	var join = []
 	split.each( function(i, thing)
@@ -486,6 +487,7 @@ function highlight( words )
 // Make links clickable, and images images
 function link_replace( string )
 {
+	if(!string){ return string; }
 	var links = string.match( /(https*:&#x2F;&#x2F;\S*)/g  );
 	if (links)
 	{
@@ -596,6 +598,7 @@ function human_date( date )
 // Nevetheless, escapes HTML control characters.
 function html_escape( string )
 {
+	if( !string ){ return string; }
 	string = string.replace(/&/g, '&amp;');
 	string = string.replace(/</g, '&lt;');
 	string = string.replace(/>/g, '&gt;');
