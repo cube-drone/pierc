@@ -110,6 +110,25 @@ function displayInlineMedia() {
 	});
 }
 
+//Direct channel links via ?channel=mychan
+$(document).ready(function() {
+    var channel = getUrlVars()["channel"];
+
+    $('#channellist option').each(function(){
+        if (this.value === channel){
+            $('#channellist').val(channel);
+        }
+    });
+});
+     
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+       vars[key] = value;
+    });
+        return vars;
+}
+
 // Navigate around the site based on the site hash.
 // This allows for use of the "Back" button, as well as reusable URL structure. 
 function hashnav()
