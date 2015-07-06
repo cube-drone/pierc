@@ -8,9 +8,9 @@ class db_class
 	public function __construct( $server, $port, $database, $user, $password, $timezone)
 	{
 		if ($port) { $port = ":".$port; }
-		$this->_conn = mysql_connect( $server.$port, $user, $password );
-		if (!$this->_conn){ die ("Could not connect: " + mysql_error() ); }
-		mysql_select_db( $database, $this->_conn );
+		// $this->_conn = mysqli_connect( $server.$port, $user, $password );
+		$this->_conn = new mysqli( $server.$port, $user, $password , $database);
+		if (!$this->_conn){ die ("Could not connect: " + mysqli_error() ); }
 		
 		// Verify that we received a proper time zone, otherwise fall back to default
 		$allZones = DateTimeZone::listIdentifiers();
@@ -22,7 +22,7 @@ class db_class
 	
 	public function __destruct( )
 	{
-		mysql_close( $this->_conn );	
+		mysqli_close( $this->_conn );	
 	}
 	
 }
@@ -34,7 +34,7 @@ class pierc_db extends db_class
 	{
 		$lines = array();
 		$counter = 0;
-		while( $row = mysql_fetch_assoc($result) )
+		while( $row = mysqli_fetch_assoc($result) )
 		{
 			if( isset( $row['time'] ) )
 			{
@@ -51,58 +51,58 @@ class pierc_db extends db_class
 	
 	public function get_last_n_lines( $channel, $n )
 	{
-		$channel = mysql_real_escape_string( $channel );
+		$channel = mysqli_real_escape_string( $this->_conn, $channel );
 		$n = (int)$n;
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' ORDER BY id DESC LIMIT $n;";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query );
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return array_reverse($this->hashinate($results));
 	}
 	
 	public function get_before( $channel, $id, $n )
 	{
-		$channel = mysql_real_escape_string( $channel );
+		$channel = mysqli_real_escape_string( $this->_conn, $channel );
 		$n = (int)$n;
 		$id = (int)$id;
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id < $id ORDER BY id DESC LIMIT $n;";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query);
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($this->_conn, $results) == 0 ) { return false; }
 		
 		return $this->hashinate($results);
 	}
 	
 	public function get_after( $channel, $id, $n )
 	{
-		$channel = mysql_real_escape_string( $channel );
+		$channel = mysqli_real_escape_string( $this->_conn, $channel );
 		$n = (int)$n;
 		$id = (int)$id;
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY time ASC, id DESC LIMIT $n;";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query);
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($this->_conn, $results) == 0 ) { return false; }
 		
 		return $this->hashinate($results);
 	}
 	
 	public function get_lines_between_now_and_id( $channel, $id)
 	{
-		$channel = mysql_real_escape_string( $channel );
+		$channel = mysqli_real_escape_string( $this->_conn, $channel );
 		$id = (int)$id;
 		$query = "
 			SELECT id, channel, name, time, message, type, hidden FROM main WHERE channel = '$channel' AND id > $id ORDER BY id DESC LIMIT 500";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query );
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return array_reverse($this->hashinate($results));
 	}
@@ -110,16 +110,16 @@ class pierc_db extends db_class
 	// Returns the number of records in 'channel' with an ID below $id
 	public function get_count( $channel, $id)
 	{
-		$channel = mysql_real_escape_string( $channel );
+		$channel = mysqli_real_escape_string( $this->_conn, $channel );
 		$id = (int)$id;
 		$query = "
 			SELECT COUNT(*) as count FROM main 
 				WHERE channel = '$channel' 
 				AND id < $id;";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query);
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		$res = $this->hashinate($results);
 		$count = $res[0]["count"];
@@ -158,15 +158,15 @@ class pierc_db extends db_class
 				WHERE id = $id ;
 				";
 
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query );
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 
-		while ($row = mysql_fetch_assoc($results)) {
+		while ($row = mysqli_fetch_assoc($results)) {
 			$channel = $row['channel'];
 		}
 
-		$channel = mysql_real_escape_string($channel);
+		$channel = mysqli_real_escape_string( $this->_conn, $channel );
 		
 		$count = $this->get_count( $channel, $id );
 		
@@ -185,9 +185,9 @@ class pierc_db extends db_class
 				ORDER BY id DESC ;
 				";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query );
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return array_reverse($this->hashinate($results));
 	}
@@ -203,8 +203,8 @@ class pierc_db extends db_class
 		foreach($searcharray as $searchterm )
 		{
 			$searchquery .= "(message LIKE '%".
-				mysql_real_escape_string($searchterm)."%' OR name LIKE '%".
-				mysql_real_escape_string($searchterm)."%' ) AND";
+				mysqli_real_escape_string($this->_conn, $searchterm)."%' OR name LIKE '%".
+				mysqli_real_escape_string($this->_conn, $searchterm)."%' ) AND";
 		}
 		
 		$n = (int)$n;
@@ -213,9 +213,9 @@ class pierc_db extends db_class
 				FROM main 
 			$searchquery true ORDER BY id DESC LIMIT $n OFFSET $offset;";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query );
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		$results = array_reverse($this->hashinate($results));
 		return $results;
@@ -223,8 +223,8 @@ class pierc_db extends db_class
 	
 	public function get_tag( $channel, $tag, $n )
 	{
-		$tag = mysql_real_escape_string($tag);
-		$channel = mysql_real_escape_string($channel);
+		$tag = mysqli_real_escape_string($this->_conn, $tag);
+		$channel = mysqli_real_escape_string($this->_conn, $channel);
 		$n = (int)$n;
 		
 		$query = "
@@ -232,34 +232,34 @@ class pierc_db extends db_class
 				FROM main 
 			WHERE message LIKE '".$tag.":%' ORDER BY id DESC LIMIT $n;";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query );
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return array_reverse($this->hashinate($results));
 	}
 	
 	public function get_lastseen( $channel, $user )
 	{
-		$user = mysql_real_escape_string($user);
-		$channel = mysql_real_escape_string($channel);
+		$user = mysqli_real_escape_string($this->_conn, $user);
+		$channel = mysqli_real_escape_string($this->_conn, $channel);
 		
 		$query = "
 			SELECT time 
 				FROM main 
 			WHERE name = '".$user."' ORDER BY id DESC LIMIT 1;";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query );
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return $this->hashinate($results);
 	}
 	
 	public function get_user( $channel, $user, $n )
 	{
-		$user = mysql_real_escape_string($user);
-		$channel = mysql_real_escape_string($channel);
+		$user = mysqli_real_escape_string($this->_conn, $user);
+		$channel = mysqli_real_escape_string($this->_conn, $channel);
 		$n = (int) $n;
 		
 		$query = "
@@ -267,9 +267,9 @@ class pierc_db extends db_class
 				FROM main 
 			WHERE name = '".$user."' ORDER BY id DESC LIMIT ".$n.";";
 		
-		$results = mysql_query( $query, $this->_conn);
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		$results = mysqli_query( $this->_conn, $query);
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return $this->hashinate($results);
 	}
@@ -277,10 +277,10 @@ class pierc_db extends db_class
 	public function get_users( $channel )
 	{
 		$query = " SELECT DISTINCT name FROM main; ";
-		$results = mysql_query( $query, $this->_conn);
+		$results = mysqli_query( $this->_conn, $query );
 		
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		$lines = $this->hashinate($results);
 		$users = array();
@@ -294,10 +294,10 @@ class pierc_db extends db_class
 	public function get_channels()
 	{
 		$query = " SELECT DISTINCT channel FROM main WHERE type <> \"nick\" AND channel <> \"undefined\";";
-		$results = mysql_query( $query, $this->_conn);
+		$results = mysqli_query( $this->_conn, $query );
 		
-		if (!$results){ print mysql_error(); return false; }
-		if( mysql_num_rows($results) == 0 ) { return false; }
+		if (!$results){ print mysqli_error(); return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		$lines = $this->hashinate($results);
 		$channels = array();
