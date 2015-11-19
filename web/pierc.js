@@ -96,7 +96,7 @@ function toggleInlineMedia() {
 } 
 
 // Display embedable media inline
-// Only images (jpg,gif,png) right now, might extend to youtube links or something eventually
+// Only images (jpg,gif,png) and youtube links right now
 function displayInlineMedia() {
 	$('.message a:not(.inline-image-link)').each(function() {
 		link = $(this);
@@ -108,6 +108,30 @@ function displayInlineMedia() {
 		  toggleInlineMedia();
 		}
 	});
+
+
+	var vidWidth = 425;
+	var vidHeight = 344;
+
+	var obj = '<object class="inline-youtube-link" width="' + vidWidth + '" height="' + vidHeight + '">' +
+	        '<param name="movie" value="http://www.youtube.com/v/[vid]&hl=en&fs=1">' +
+	        '</param><param name="allowFullScreen" value="true"></param><param ' +
+	        'name="allowscriptaccess" value="always"></param><em' +
+	        'bed src="http://www.youtube.com/v/[vid]&hl=en&fs=1" ' +
+	        'type="application/x-shockwave-flash" allowscriptaccess="always" ' +
+	        'allowfullscreen="true" width="' + vidWidth + '" ' + 'height="' +
+	        vidHeight + '"></embed></object> ';
+
+	$('.message a:not(.inline-youtube-link):contains("youtube.com/watch")').each(function(){
+	                var that = $(this);
+	                var vid = that.html().match(/(?:v=)([\w\-]+)/g); 
+	                if (vid.length) {
+	                $.each(vid, function(){
+	                        that.append( obj.replace(/\[vid\]/g, this.replace('v=','')) );
+	                        });
+	                }
+	         });
+	
 }
 
 //Direct channel links via ?channel=mychan
