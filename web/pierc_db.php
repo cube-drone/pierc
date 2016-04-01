@@ -73,7 +73,7 @@ class pierc_db extends db_class
 		
 		$results = mysqli_query( $this->_conn, $query);
 		if (!$results){ print mysqli_error(); return false; }
-		if( mysqli_num_rows($this->_conn, $results) == 0 ) { return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return $this->hashinate($results);
 	}
@@ -88,7 +88,7 @@ class pierc_db extends db_class
 		
 		$results = mysqli_query( $this->_conn, $query);
 		if (!$results){ print mysqli_error(); return false; }
-		if( mysqli_num_rows($this->_conn, $results) == 0 ) { return false; }
+		if( mysqli_num_rows($results) == 0 ) { return false; }
 		
 		return $this->hashinate($results);
 	}
